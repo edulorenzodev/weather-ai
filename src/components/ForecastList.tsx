@@ -133,6 +133,7 @@ const ForecastListComponent = ({ forecast }: { forecast: ForecastItem[] }) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
@@ -149,22 +150,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'transparent',
     borderRadius: 20,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   row: {
     flexDirection: 'row',

@@ -224,26 +224,15 @@ const styles = StyleSheet.create({
   cardsContainer: {
     gap: 8,
   },
-  card: {
+card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'transparent',
     borderRadius: 16,
     padding: 16,
     gap: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   iconContainer: {
     width: 44,
