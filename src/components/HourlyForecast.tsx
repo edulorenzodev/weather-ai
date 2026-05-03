@@ -2,6 +2,8 @@ import { memo, useMemo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Platform, Animated, ScrollView } from 'react-native';
 import { ForecastItem } from '../types';
 
+const Ionicons = require('@expo/vector-icons').Ionicons;
+
 const getWeatherIcon = (main: string): string => {
   const icons: Record<string, string> = {
     Clear: '☀️',
@@ -101,7 +103,7 @@ const HourlyForecastComponent = ({ forecast }: HourlyForecastProps) => {
     <View style={styles.container}>
       <Animated.View style={[styles.card, { opacity: cardOpacity, transform: [{ translateY: cardTranslateY }] }]}>
         <View style={styles.header}>
-          <Text style={styles.headerIcon}>🕐</Text>
+          <Ionicons name="time-outline" size={20} color="rgba(255, 255, 255, 0.5)" />
           <Text style={styles.headerText}>Próximas horas</Text>
         </View>
         <ScrollView 

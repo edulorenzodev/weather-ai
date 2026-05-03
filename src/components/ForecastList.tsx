@@ -2,6 +2,8 @@ import { memo, useMemo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
 import { ForecastItem } from '../types';
 
+const Ionicons = require('@expo/vector-icons').Ionicons;
+
 const getWeatherIcon = (main: string): string => {
   const icons: Record<string, string> = {
     Clear: '☀️',
@@ -111,12 +113,11 @@ const ForecastListComponent = ({ forecast }: { forecast: ForecastItem[] }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerIcon}>📅</Text>
-        <Text style={styles.headerText}>Pronóstico semanal</Text>
-      </View>
-
       <Animated.View style={[styles.card, { opacity: cardOpacity, transform: [{ translateY: cardTranslateY }] }]}>
+        <View style={styles.header}>
+          <Ionicons name="calendar-outline" size={20} color="rgba(255, 255, 255, 0.5)" />
+          <Text style={styles.headerText}>Pronóstico semanal</Text>
+        </View>
         {dailyForecast.map((item, index) => (
           <ForecastRow
             key={item.dt}
@@ -139,15 +140,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   headerIcon: {
     fontSize: 18,
   },
   headerText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#ffffff',
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.5)',
   },
   card: {
     backgroundColor: 'transparent',

@@ -214,7 +214,10 @@ export default function Home() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.mainTempContainer}>
-            <Text style={styles.mainTemp}>{Math.round(weather.main.temp)}°</Text>
+            <View style={styles.tempRow}>
+              <Text style={styles.mainTemp}>{Math.round(weather.main.temp)}</Text>
+              <Text style={styles.tempUnit}>°C</Text>
+            </View>
             <Text style={styles.conditionMaxMin}>
               {getSpanishDescription(weather.weather[0]?.description || '')} {Math.round(weather.main.temp_max)}° {Math.round(weather.main.temp_min)}°
             </Text>
@@ -319,9 +322,22 @@ const styles = StyleSheet.create({
   },
   mainTemp: {
     fontSize: 120,
-    fontWeight: '200',
+    fontWeight: '300',
     color: '#ffffff',
     letterSpacing: -8,
+    lineHeight: 120,
+  },
+  tempRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: -8,
+  },
+  tempUnit: {
+    fontSize: 24,
+    fontWeight: '300',
+    color: '#ffffff',
+    marginTop: 8,
+    marginLeft: 3,
   },
   conditionMaxMin: {
     fontSize: 16,
