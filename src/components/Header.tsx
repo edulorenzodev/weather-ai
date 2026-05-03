@@ -2,6 +2,8 @@ import { memo } from 'react';
 import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
+const Ionicons = require('@expo/vector-icons').Ionicons;
+
 interface HeaderProps {
   cityName: string;
   onAddPress: () => void;
@@ -61,6 +63,7 @@ const HeaderComponent = ({ cityName, onAddPress, onMenuPress }: HeaderProps) => 
     <View style={styles.container}>
       <AddButton onPress={onAddPress} />
       <View style={styles.titleContainer}>
+        <Ionicons name="location-outline" size={20} color="white" style={styles.locationIcon} />
         <Text style={styles.title} numberOfLines={1}>{cityName}</Text>
       </View>
       <MenuButton onPress={onMenuPress} />
@@ -102,8 +105,14 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 16,
+    gap: 8,
+  },
+  locationIcon: {
+    opacity: 0.8,
   },
   title: {
     fontSize: 20,
