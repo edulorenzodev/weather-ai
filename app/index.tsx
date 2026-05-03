@@ -217,11 +217,8 @@ export default function Home() {
     <LinearGradient colors={['#1e3a5f', '#0d1b2a']} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
-          <View>
-            <Text style={styles.headerTitle}>Clima actual</Text>
-            <Text style={styles.headerDate}>{currentDate}</Text>
-          </View>
-          <RefreshButton onPress={handleRefresh} isRefreshing={isRefreshing} />
+          <Text style={styles.headerTitle}>Clima actual</Text>
+          <Text style={styles.headerDate}>{currentDate}</Text>
         </View>
 
         <ScrollView
@@ -338,9 +335,6 @@ const styles = StyleSheet.create({
     color: '#60a5fa',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
     paddingHorizontal: 20,
     paddingTop: 8,
     paddingBottom: 12,
