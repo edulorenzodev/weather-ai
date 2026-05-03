@@ -142,6 +142,8 @@ const WeatherCardComponent = ({ weather }: { weather: WeatherData }) => {
   }, []);
 
   const temp = Math.round(weather.main.temp);
+  const tempMax = Math.round(weather.main.temp_max);
+  const tempMin = Math.round(weather.main.temp_min);
   const feelsLike = Math.round(weather.main.feels_like);
   const humidity = weather.main.humidity;
   const windSpeed = Math.round(weather.wind.speed * 3.6);
@@ -174,9 +176,10 @@ const WeatherCardComponent = ({ weather }: { weather: WeatherData }) => {
       <View style={styles.tempContainer}>
         <Animated.View style={{ transform: [{ scale: tempScale }], opacity: tempScale }}>
           <Text style={styles.temp}>{temp}°</Text>
+          <Text style={styles.maxMin}>{getSpanishCondition(condition)} {tempMax}° {tempMin}°</Text>
           <Text style={styles.feelsLike}>Sensación térmica {feelsLike}°</Text>
         </Animated.View>
-        <Text style={styles.condition}>{getSpanishCondition(condition)}</Text>
+        <Text style={styles.condition}></Text>
       </View>
 
       <View style={styles.divider} />
@@ -253,10 +256,15 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     letterSpacing: -4,
   },
+  maxMin: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.5)',
+    marginTop: 2,
+  },
   feelsLike: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.5)',
-    marginTop: 4,
+    marginTop: 2,
   },
   condition: {
     fontSize: 14,
