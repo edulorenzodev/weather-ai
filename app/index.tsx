@@ -15,8 +15,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWeather } from '../src/hooks/useWeather';
 import { usePlaces } from '../src/hooks/usePlaces';
 import { useAIRecommendation } from '../src/hooks/useAIRecommendation';
-import { WeatherCard } from '../src/components/WeatherCard';
+import { Header } from '../src/components/Header';
+import { WeatherBackground, WeatherCondition } from '../src/components/WeatherBackground';
 import { ForecastList } from '../src/components/ForecastList';
+import { HourlyForecast } from '../src/components/HourlyForecast';
 import { PlacesList } from '../src/components/PlacesList';
 import { AIRecommendationCard } from '../src/components/AIRecommendationCard';
 
@@ -99,67 +101,6 @@ const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void })
   );
 };
 
-const RefreshButton = ({ onPress, isRefreshing }: { onPress: () => void; isRefreshing: boolean }) => {
-  const rotationAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    if (isRefreshing) {
-      Animated.loop(
-        Animated.timing(rotationAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        })
-      ).start();
-    } else {
-      rotationAnim.stopAnimation();
-      rotationAnim.setValue(0);
-    }
-  }, [isRefreshing]);
-
-  const handlePressIn = () => {
-    if (!isRefreshing) {
-      Animated.spring(scaleAnim, {
-        toValue: 0.9,
-        damping: 15,
-        stiffness: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const handlePressOut = () => {
-    if (!isRefreshing) {
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        damping: 15,
-        stiffness: 300,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
-  const spin = rotationAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
-
-  return (
-    <Animated.View style={{ transform: [{ scale: scaleAnim }, { rotate: spin }] }}>
-      <Pressable
-        style={styles.refreshButton}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        onPress={onPress}
-        disabled={isRefreshing}
-      >
-        <Text style={styles.refreshIcon}>↻</Text>
-      </Pressable>
-    </Animated.View>
-  );
-};
-
 export default function Home() {
   const { weather, forecast, loading, error, refetch } = useWeather();
   const { recommendation, loading: aiLoading, getRecommendation } = useAIRecommendation();
@@ -207,19 +148,21 @@ export default function Home() {
     return <ErrorScreen error={error || ''} onRetry={refetch} />;
   }
 
-  const currentDate = new Date().toLocaleDateString('es-ES', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  });
+  const weatherCondition = (weather.weather[0]?.main || 'Clear') as WeatherCondition;
+
+  const handleAddCity = () => {
+    console.log('Add city pressed');
+  };
+
+  const handleMenuPress = () => {
+    console.log('Menu pressed');
+  };
 
   return (
-    <LinearGradient colors={['#1e3a5f', '#0d1b2a']} style={styles.container}>
+    <View style={styles.container}>
+      <WeatherBackground condition={weatherCondition} />
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Clima actual</Text>
-          <Text style={styles.headerDate}>{currentDate}</Text>
-        </View>
+        <Header cityName={weather.name} onAddPress={handleAddCity} onMenuPress={handleMenuPress} />
 
         <ScrollView
           style={styles.scrollView}
@@ -235,20 +178,21 @@ export default function Home() {
           }
           showsVerticalScrollIndicator={false}
         >
-          <WeatherCard weather={weather} />
+          <View style={styles.mainTempContainer}>
+            <Text style={styles.mainTemp}>{Math.round(weather.main.temp)}°</Text>
+            <Text style={styles.conditionMaxMin}>
+              {weather.weather[0]?.description?.charAt(0).toUpperCase() + weather.weather[0]?.description?.slice(1)} {Math.round(weather.main.temp_max)}° {Math.round(weather.main.temp_min)}°
+            </Text>
+            <Text style={styles.feelsLike}>Sensación térmica {Math.round(weather.main.feels_like)}°</Text>
+          </View>
+
+          <HourlyForecast forecast={forecast} />
           <AIRecommendationCard recommendation={recommendation} loading={aiLoading} />
           <ForecastList forecast={forecast} />
           <PlacesList beaches={beaches} mountains={mountains} />
-
-          {placesLoading && (
-            <View style={styles.loadingPlaces}>
-              <ActivityIndicator size="small" color="#60a5fa" />
-              <Text style={styles.loadingPlacesText}>Buscando lugares...</Text>
-            </View>
-          )}
         </ScrollView>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -334,43 +278,26 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#60a5fa',
   },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 12,
+  mainTempContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  mainTemp: {
+    fontSize: 120,
+    fontWeight: '200',
     color: '#ffffff',
+    letterSpacing: -8,
   },
-  headerDate: {
+  conditionMaxMin: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.7)',
+    marginTop: 4,
+    textTransform: 'capitalize',
+  },
+  feelsLike: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.5)',
-    marginTop: 4,
-  },
-  refreshButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
-  },
-  refreshIcon: {
-    fontSize: 18,
-    color: '#ffffff',
+    marginTop: 8,
   },
   scrollView: {
     flex: 1,
