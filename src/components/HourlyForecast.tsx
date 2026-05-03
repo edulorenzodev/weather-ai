@@ -1,5 +1,5 @@
 import { memo, useMemo, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
+import { View, Text, StyleSheet, Platform, Animated, ScrollView } from 'react-native';
 import { ForecastItem } from '../types';
 
 const getWeatherIcon = (main: string): string => {
@@ -14,8 +14,19 @@ const getWeatherIcon = (main: string): string => {
   return icons[main] || '🌤️';
 };
 
+const getWindSpeed = (speed: number): string => {
+  return `${Math.round(speed * 3.6)} km/h`;
+};
+
 const getHourFromTimestamp = (timestamp: number): string => {
   const date = new Date(timestamp * 1000);
+  return date.toLocaleTimeString('es-ES', { hour: '2-digit', hour12: false });
+};
+
+const formatHour = (index: number): string => {
+  if (index === 0) return 'Ahora';
+  const date = new Date();
+  date.setHours(date.getHours() + index);
   return date.toLocaleTimeString('es-ES', { hour: '2-digit', hour12: false });
 };
 
@@ -48,9 +59,10 @@ const HourItem = ({ item, index }: HourItemProps) => {
 
   return (
     <Animated.View style={[styles.hourItem, { opacity, transform: [{ translateY }] }]}>
-      <Text style={styles.hourTime}>{getHourFromTimestamp(item.dt)}</Text>
-      <Text style={styles.hourIcon}>{getWeatherIcon(item.weather[0].main)}</Text>
       <Text style={styles.hourTemp}>{Math.round(item.main.temp)}°</Text>
+      <Text style={styles.hourIcon}>{getWeatherIcon(item.weather[0].main)}</Text>
+      <Text style={styles.hourWind}>{getWindSpeed(item.wind?.speed || 0)}</Text>
+      <Text style={styles.hourTime}>{formatHour(index)}</Text>
     </Animated.View>
   );
 };
@@ -93,11 +105,15 @@ const HourlyForecastComponent = ({ forecast }: HourlyForecastProps) => {
       </View>
 
       <Animated.View style={[styles.card, { opacity: cardOpacity, transform: [{ translateY: cardTranslateY }] }]}>
-        <View style={styles.hoursContainer}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.hoursContainer}
+        >
           {hourlyData.map((item, index) => (
             <HourItem key={item.dt} item={item} index={index} />
           ))}
-        </View>
+        </ScrollView>
       </Animated.View>
     </View>
   );
@@ -106,6 +122,7 @@ const HourlyForecastComponent = ({ forecast }: HourlyForecastProps) => {
 const styles = StyleSheet.create({
   container: {
     marginBottom: 20,
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
@@ -122,30 +139,20 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'transparent',
     borderRadius: 20,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   hoursContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+    gap: 16,
   },
   hourItem: {
     alignItems: 'center',
-    flex: 1,
+    minWidth: 60,
   },
   hourTime: {
     fontSize: 12,
@@ -154,6 +161,11 @@ const styles = StyleSheet.create({
   },
   hourIcon: {
     fontSize: 24,
+    marginBottom: 4,
+  },
+  hourWind: {
+    fontSize: 10,
+    color: 'rgba(255, 255, 255, 0.5)',
     marginBottom: 4,
   },
   hourTemp: {

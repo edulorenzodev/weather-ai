@@ -34,6 +34,9 @@ export interface ForecastItem {
     main: string;
     icon: string;
   }>;
+  wind: {
+    speed: number;
+  };
 }
 
 export interface Place {

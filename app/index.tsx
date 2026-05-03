@@ -137,7 +137,7 @@ const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void })
 };
 
 export default function Home() {
-  const { weather, forecast, loading, error, refetch } = useWeather();
+  const { weather, forecast, hourlyForecast, loading, error, refetch } = useWeather();
   const { recommendation, loading: aiLoading, getRecommendation } = useAIRecommendation();
   const { beaches, mountains, loading: placesLoading, refetch: refetchPlaces } = usePlaces(
     weather?.coord.lat,
@@ -221,7 +221,7 @@ export default function Home() {
             <Text style={styles.feelsLike}>Sensación térmica {Math.round(weather.main.feels_like)}°</Text>
           </View>
 
-          <HourlyForecast forecast={forecast} />
+          <HourlyForecast forecast={hourlyForecast} />
           <AIRecommendationCard recommendation={recommendation} loading={aiLoading} />
           <ForecastList forecast={forecast} />
           <PlacesList beaches={beaches} mountains={mountains} />

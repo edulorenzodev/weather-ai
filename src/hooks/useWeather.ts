@@ -7,6 +7,7 @@ import { WeatherData, ForecastItem } from '../types';
 export const useWeather = () => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [forecast, setForecast] = useState<ForecastItem[]>([]);
+  const [hourlyForecast, setHourlyForecast] = useState<ForecastItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,6 +54,7 @@ export const useWeather = () => {
       setWeather(weatherData);
       const dailyForecast = forecastData.list.filter((_, index) => index % 8 === 0);
       setForecast(dailyForecast.slice(0, 5));
+      setHourlyForecast(forecastData.list.slice(0, 8));
     } catch (err: any) {
       if (axios.isCancel(err)) {
         return;
@@ -75,5 +77,5 @@ export const useWeather = () => {
     };
   }, [fetchWeather]);
 
-  return { weather, forecast, loading, error, refetch: fetchWeather };
+  return { weather, forecast, hourlyForecast, loading, error, refetch: fetchWeather };
 };
