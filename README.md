@@ -134,11 +134,30 @@ weather-ai/
 | Buen clima + montaña cerca | Excursión ⛰️ |
 | Lluvia o frío | Quedarse en casa 🏠 |
 
-## Próximas Mejoras
+## Roadmap
 
+### ✅ Completado
+
+- [x] UI principal con temperatura grande y fondo dinámico
+- [x] Header con icono de ubicación, nombre ciudad y menú
+- [x] Fondo dinámico según clima (sol, nubes, tormenta)
+- [x] Pronóstico semanal (5 días)
+- [x] Pronóstico por horas con scroll horizontal
+- [x] Recomendación de IA (playa/montaña/casa)
+- [x] Lugares cercanos (playas y montañas)
+- [x] Traducción al español
+- [x] Estilo de cards transparente con borde sutil
+- [x] Iconos Ionicons替换 emojis
+- [x] Indicador de Celsius (°C)
+- [x] Quitar botón refresh redundante
+
+### 📋 Pendiente
+
+- [ ] Pantalla de búsqueda/Agregar nuevas ciudades
+- [ ] Menú emergente (Compartir, Ajustes)
 - [ ] Historial de ubicaciones guardadas
+- [ ] Pantalla de detalles por hora (al tocar)
 - [ ] Notificaciones push para cambios de clima
-- [ ] Integración con más APIs de actividades
 - [ ] Modo offline con datos cacheados
 - [ ] Widget para la pantalla de inicio
 
