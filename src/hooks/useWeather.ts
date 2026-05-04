@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import axios from 'axios';
 import { getCurrentWeather, getForecast } from '../services/weatherService';
 import { WeatherData, ForecastItem } from '../types';
+import { useCitiesStore } from '../store/citiesStore';
 
 export const useWeather = () => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -11,6 +12,8 @@ export const useWeather = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { activeCity } = useCitiesStore();
+  
   const cancelTokenSourceRef = useRef(axios.CancelToken.source());
   const isMountedRef = useRef(true);
 
@@ -21,7 +24,7 @@ export const useWeather = () => {
     };
   }, []);
 
-  const fetchWeather = useCallback(async () => {
+  const fetchWeather = useCallback(async (cityCoords?: { lat: number; lon: number }) => {
     cancelTokenSourceRef.current.cancel('Cancelling previous request');
     cancelTokenSourceRef.current = axios.CancelToken.source();
 
@@ -29,20 +32,29 @@ export const useWeather = () => {
       setLoading(true);
       setError(null);
 
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
+      let latitude: number;
+      let longitude: number;
+
+      if (cityCoords) {
+        latitude = cityCoords.lat;
+        longitude = cityCoords.lon;
+      } else {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          if (!isMountedRef.current) return;
+          setError('Permiso de ubicación denegado');
+          return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        });
+
         if (!isMountedRef.current) return;
-        setError('Permiso de ubicación denegado');
-        return;
+
+        latitude = location.coords.latitude;
+        longitude = location.coords.longitude;
       }
-
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
-
-      if (!isMountedRef.current) return;
-
-      const { latitude, longitude } = location.coords;
 
       const [weatherData, forecastData] = await Promise.all([
         getCurrentWeather(latitude, longitude, cancelTokenSourceRef.current.token),
@@ -71,11 +83,16 @@ export const useWeather = () => {
   }, []);
 
   useEffect(() => {
-    fetchWeather();
+    if (activeCity) {
+      fetchWeather({ lat: activeCity.lat, lon: activeCity.lon });
+    } else {
+      fetchWeather();
+    }
+    
     return () => {
       cancelTokenSourceRef.current.cancel('Component unmounted');
     };
-  }, [fetchWeather]);
+  }, [activeCity, fetchWeather]);
 
   return { weather, forecast, hourlyForecast, loading, error, refetch: fetchWeather };
 };

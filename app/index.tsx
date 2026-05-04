@@ -197,7 +197,7 @@ export default function Home() {
     <View style={styles.container}>
       <WeatherBackground condition={weatherCondition} />
       <SafeAreaView style={styles.safeArea}>
-        <Header cityName={weather.name} onAddPress={handleAddCity} onMenuPress={handleMenuPress} />
+        <Header cityName={weather.name} onMenuPress={handleMenuPress} />
 
         <ScrollView
           style={styles.scrollView}

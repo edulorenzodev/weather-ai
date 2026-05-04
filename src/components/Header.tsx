@@ -1,12 +1,12 @@
 import { memo } from 'react';
 import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 const Ionicons = require('@expo/vector-icons').Ionicons;
 
 interface HeaderProps {
   cityName: string;
-  onAddPress: () => void;
   onMenuPress: () => void;
 }
 
@@ -58,10 +58,16 @@ const MenuButton = ({ onPress }: { onPress: () => void }) => {
   );
 };
 
-const HeaderComponent = ({ cityName, onAddPress, onMenuPress }: HeaderProps) => {
+const HeaderComponent = ({ cityName, onMenuPress }: HeaderProps) => {
+  const router = useRouter();
+  
+  const handleAddPress = () => {
+    router.push('/manage-cities');
+  };
+
   return (
     <View style={styles.container}>
-      <AddButton onPress={onAddPress} />
+      <AddButton onPress={handleAddPress} />
       <View style={styles.titleContainer}>
         <Ionicons name="location-outline" size={20} color="white" style={styles.locationIcon} />
         <Text style={styles.title} numberOfLines={1}>{cityName}</Text>

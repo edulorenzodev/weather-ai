@@ -70,3 +70,10 @@ export interface AIRecommendation {
   icon: string;
   reason: string;
 }
+
+export interface City {
+  name: string;
+  country: string;
+  lat: number;
+  lon: number;
+}
