@@ -44,6 +44,10 @@ export default function ManageCitiesScreen() {
     }
   }, [reorderCities]);
 
+  const handleSelectCity = useCallback((city: City) => {
+    setActiveCity(city);
+  }, [setActiveCity]);
+
   const renderCityItem = useCallback(({ item, drag, isActive }: RenderItemParams<City>) => {
     const isCityActive = activeCity && 
       activeCity.name === item.name && 
@@ -58,11 +62,12 @@ export default function ManageCitiesScreen() {
           city={item}
           isActive={isCityActive || false}
           drag={drag}
+          onPress={() => handleSelectCity(item)}
           onDelete={() => handleDeleteCity(index)}
         />
       </ScaleDecorator>
     );
-  }, [cities, activeCity, handleDeleteCity]);
+  }, [cities, activeCity, handleDeleteCity, handleSelectCity]);
 
   return (
     <GestureHandlerRootView style={styles.container}>
