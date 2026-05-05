@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWeather } from '../src/hooks/useWeather';
 import { usePlaces } from '../src/hooks/usePlaces';
 import { useAIRecommendation } from '../src/hooks/useAIRecommendation';
+import { useCitiesStore } from '../src/store/citiesStore';
 import { Header } from '../src/components/Header';
 import { WeatherBackground, WeatherCondition } from '../src/components/WeatherBackground';
 import { ForecastList } from '../src/components/ForecastList';
@@ -138,6 +139,7 @@ const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void })
 
 export default function Home() {
   const { weather, forecast, hourlyForecast, loading, error, refetch } = useWeather();
+  const { activeCity } = useCitiesStore();
   const { recommendation, loading: aiLoading, getRecommendation } = useAIRecommendation();
   const { beaches, mountains, loading: placesLoading, refetch: refetchPlaces } = usePlaces(
     weather?.coord.lat,
@@ -197,7 +199,7 @@ export default function Home() {
     <View style={styles.container}>
       <WeatherBackground condition={weatherCondition} />
       <SafeAreaView style={styles.safeArea}>
-        <Header cityName={weather.name} onMenuPress={handleMenuPress} />
+        <Header cityName={activeCity?.name || weather?.name || ''} onMenuPress={handleMenuPress} />
 
         <ScrollView
           style={styles.scrollView}
