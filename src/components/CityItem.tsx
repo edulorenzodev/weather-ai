@@ -45,7 +45,7 @@ const CityItemComponent = ({
                 </View>
               )}
             </View>
-            <Text style={styles.country}>{city.country}</Text>
+            <Text style={styles.country}>{[city.state, city.country].filter(Boolean).join(', ')}</Text>
           </View>
           
           {onDelete && (
