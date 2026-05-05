@@ -12,10 +12,11 @@ Aplicación del tiempo con IA que te sugiere actividades basadas en el clima y l
 
 ## Stack Tecnológico
 
-- **React Native** con Expo SDK 55
+- **React Native** con Expo SDK 54
 - **TypeScript** para tipado estático
 - **NativeWind** (Tailwind CSS para React Native)
 - **Zustand** para gestión de estado
+- **MMKV** para persistencia
 - **Expo Router** para navegación
 
 ## APIs Integradas
@@ -95,13 +96,19 @@ npx expo start
 weather-ai/
 ├── app/                          # Expo Router screens
 │   ├── _layout.tsx              # Root layout
-│   └── index.tsx                # Home screen
+│   ├── index.tsx                # Home screen
+│   └── manage-cities.tsx        # City management screen
 ├── src/
 │   ├── components/              # UI components
 │   │   ├── WeatherCard.tsx
 │   │   ├── ForecastList.tsx
+│   │   ├── HourlyForecast.tsx
 │   │   ├── PlacesList.tsx
-│   │   └── AIRecommendationCard.tsx
+│   │   ├── AIRecommendationCard.tsx
+│   │   ├── Header.tsx
+│   │   ├── SearchBar.tsx
+│   │   ├── SearchResultItem.tsx
+│   │   └── CityItem.tsx
 │   ├── services/                # API services
 │   │   ├── weatherService.ts
 │   │   ├── placesService.ts
@@ -110,6 +117,8 @@ weather-ai/
 │   │   ├── useWeather.ts
 │   │   ├── usePlaces.ts
 │   │   └── useAIRecommendation.ts
+│   ├── store/                   # Zustand stores
+│   │   └── citiesStore.ts
 │   └── types/                   # TypeScript types
 │       └── index.ts
 ├── tailwind.config.js           # Tailwind configuration
@@ -141,7 +150,7 @@ weather-ai/
 - [x] UI principal con temperatura grande y fondo dinámico
 - [x] Header con icono de ubicación, nombre ciudad y menú
 - [x] Fondo dinámico según clima (sol, nubes, tormenta)
-- [x] Pronóstico semanal (5 días)
+- [x] Pronóstico semanal (5 días) con temp max/min reales
 - [x] Pronóstico por horas con scroll horizontal
 - [x] Recomendación de IA (playa/montaña/casa)
 - [x] Lugares cercanos (playas y montañas)
@@ -150,12 +159,13 @@ weather-ai/
 - [x] Iconos Ionicons替换 emojis
 - [x] Indicador de Celsius (°C)
 - [x] Quitar botón refresh redundante
+- [x] Gestión de ciudades (buscar, agregar, reordenar, eliminar)
+- [x] Primera ciudad de la lista como ciudad activa
+- [x] Persistencia de ciudades con MMKV
 
 ### 📋 Pendiente
 
-- [ ] Pantalla de búsqueda/Agregar nuevas ciudades
 - [ ] Menú emergente (Compartir, Ajustes)
-- [ ] Historial de ubicaciones guardadas
 - [ ] Pantalla de detalles por hora (al tocar)
 - [ ] Notificaciones push para cambios de clima
 - [ ] Modo offline con datos cacheados
