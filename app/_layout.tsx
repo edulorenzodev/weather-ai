@@ -9,6 +9,7 @@ export default function RootLayout() {
       <StatusBar style="light" />
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="manage-cities" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
   );
