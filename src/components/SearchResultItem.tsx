@@ -10,6 +10,8 @@ interface SearchResultItemProps {
 }
 
 const SearchResultItemComponent = ({ city, onPress }: SearchResultItemProps) => {
+  const locationText = [city.state, city.country].filter(Boolean).join(', ');
+
   return (
     <Pressable 
       style={({ pressed }) => [
@@ -21,7 +23,7 @@ const SearchResultItemComponent = ({ city, onPress }: SearchResultItemProps) => 
       <IoniconsIcon name="location-outline" size={20} color="rgba(255, 255, 255, 0.7)" />
       <View style={styles.textContainer}>
         <Text style={styles.cityName}>{city.name}</Text>
-        <Text style={styles.country}>{city.country}</Text>
+        {locationText ? <Text style={styles.country}>{locationText}</Text> : null}
       </View>
     </Pressable>
   );

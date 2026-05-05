@@ -25,6 +25,7 @@ export const searchCities = async (
   
   return response.data.map((item: any) => ({
     name: item.name || '',
+    state: item.state || undefined,
     country: item.country || item.country_code || '',
     lat: item.lat || 0,
     lon: item.lon || 0,
