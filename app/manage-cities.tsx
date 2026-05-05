@@ -13,6 +13,8 @@ import { SearchResultItem } from '../src/components/SearchResultItem';
 import { CityItem } from '../src/components/CityItem';
 import { useCitiesStore, City } from '../src/store/citiesStore';
 
+export const options = { headerShown: false };
+
 export default function ManageCitiesScreen() {
   const router = useRouter();
   const [searchResults, setSearchResults] = useState<City[]>([]);
