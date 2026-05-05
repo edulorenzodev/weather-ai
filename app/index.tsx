@@ -17,6 +17,7 @@ import { usePlaces } from '../src/hooks/usePlaces';
 import { useAIRecommendation } from '../src/hooks/useAIRecommendation';
 import { useCitiesStore } from '../src/store/citiesStore';
 import { Header } from '../src/components/Header';
+import { ShareMenu } from '../src/components/ShareMenu';
 import { WeatherBackground, WeatherCondition } from '../src/components/WeatherBackground';
 import { ForecastList } from '../src/components/ForecastList';
 import { HourlyForecast } from '../src/components/HourlyForecast';
@@ -146,6 +147,7 @@ export default function Home() {
     weather?.coord.lon
   );
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [shareMenuVisible, setShareMenuVisible] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchAIRecommendation = useCallback(() => {
@@ -192,8 +194,12 @@ export default function Home() {
   };
 
   const handleMenuPress = () => {
-    console.log('Menu pressed');
+    setShareMenuVisible(true);
   };
+
+  const weatherShareText = weather
+    ? `El clima en ${activeCity?.name || weather.name} es de ${Math.round(weather.main.temp)}°C - ${getSpanishDescription(weather.weather[0]?.description || '')}`
+    : '';
 
   return (
     <View style={styles.container}>
@@ -232,6 +238,11 @@ export default function Home() {
           <PlacesList beaches={beaches} mountains={mountains} />
         </ScrollView>
       </SafeAreaView>
+      <ShareMenu
+        visible={shareMenuVisible}
+        onClose={() => setShareMenuVisible(false)}
+        weatherText={weatherShareText}
+      />
     </View>
   );
 }
