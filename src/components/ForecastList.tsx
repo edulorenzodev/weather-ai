@@ -1,6 +1,7 @@
 import { memo, useMemo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
 import { ForecastItem } from '../types';
+import { useSettingsStore, convertTemperature } from '../store/settingsStore';
 
 const Ionicons = require('@expo/vector-icons').Ionicons;
 
@@ -72,10 +73,10 @@ const ForecastRow = ({ item, index, isLast }: {
 
       <View style={styles.tempContainer}>
         <Text style={styles.tempHigh}>
-          {Math.round(item.main.temp_max)}°
+          {Math.round(convertTemperature(item.main.temp_max, useSettingsStore.getState().temperatureUnit))}°
         </Text>
         <Text style={styles.tempLow}>
-          {Math.round(item.main.temp_min)}°
+          {Math.round(convertTemperature(item.main.temp_min, useSettingsStore.getState().temperatureUnit))}°
         </Text>
       </View>
     </Animated.View>

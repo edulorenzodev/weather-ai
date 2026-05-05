@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
 import { WeatherData } from '../types';
+import { useSettingsStore, convertTemperature, convertWindSpeed } from '../store/settingsStore';
 
 const getWeatherIcon = (main: string): string => {
   const icons: Record<string, string> = {
@@ -141,18 +142,21 @@ const WeatherCardComponent = ({ weather }: { weather: WeatherData }) => {
     ]).start();
   }, []);
 
-  const temp = Math.round(weather.main.temp);
-  const tempMax = Math.round(weather.main.temp_max);
-  const tempMin = Math.round(weather.main.temp_min);
-  const feelsLike = Math.round(weather.main.feels_like);
+  const { temperatureUnit, windSpeedUnit } = useSettingsStore();
+  
+  const temp = Math.round(convertTemperature(weather.main.temp, temperatureUnit));
+  const tempMax = Math.round(convertTemperature(weather.main.temp_max, temperatureUnit));
+  const tempMin = Math.round(convertTemperature(weather.main.temp_min, temperatureUnit));
+  const feelsLike = Math.round(convertTemperature(weather.main.feels_like, temperatureUnit));
   const humidity = weather.main.humidity;
-  const windSpeed = Math.round(weather.wind.speed * 3.6);
+  const windSpeed = Math.round(convertWindSpeed(weather.wind.speed * 3.6, windSpeedUnit));
   const visibility = (weather.visibility / 1000).toFixed(1);
   const pressure = weather.main.pressure;
   const condition = weather.weather[0].main;
+  const windUnitLabel = windSpeedUnit === 'kmh' ? 'km/h' : 'mph';
 
   const metrics = [
-    { icon: '💨', value: windSpeed, unit: 'km/h', label: 'Viento', color: 'rgba(59, 130, 246, 0.2)' },
+    { icon: '💨', value: windSpeed, unit: windUnitLabel, label: 'Viento', color: 'rgba(59, 130, 246, 0.2)' },
     { icon: '💧', value: humidity, unit: '%', label: 'Humedad', color: 'rgba(34, 211, 238, 0.2)' },
     { icon: '👁️', value: visibility, unit: 'km', label: 'Visibilidad', color: 'rgba(168, 139, 250, 0.2)' },
     { icon: '◉', value: pressure, unit: 'hPa', label: 'Presión', color: 'rgba(251, 146, 60, 0.2)' },

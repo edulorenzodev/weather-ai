@@ -16,6 +16,7 @@ import { useWeather } from '../src/hooks/useWeather';
 import { usePlaces } from '../src/hooks/usePlaces';
 import { useAIRecommendation } from '../src/hooks/useAIRecommendation';
 import { useCitiesStore } from '../src/store/citiesStore';
+import { useSettingsStore, convertTemperature, convertWindSpeed } from '../src/store/settingsStore';
 import { Header } from '../src/components/Header';
 import { ShareMenu } from '../src/components/ShareMenu';
 import { WeatherBackground, WeatherCondition } from '../src/components/WeatherBackground';
@@ -141,6 +142,7 @@ const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void })
 export default function Home() {
   const { weather, forecast, hourlyForecast, loading, error, refetch } = useWeather();
   const { activeCity } = useCitiesStore();
+  const { temperatureUnit, windSpeedUnit } = useSettingsStore();
   const { recommendation, loading: aiLoading, getRecommendation } = useAIRecommendation();
   const { beaches, mountains, loading: placesLoading, refetch: refetchPlaces } = usePlaces(
     weather?.coord.lat,
@@ -197,8 +199,9 @@ export default function Home() {
     setShareMenuVisible(true);
   };
 
+  const tempSymbol = temperatureUnit === 'celsius' ? '°C' : '°F';
   const weatherShareText = weather
-    ? `El clima en ${activeCity?.name || weather.name} es de ${Math.round(weather.main.temp)}°C - ${getSpanishDescription(weather.weather[0]?.description || '')}`
+    ? `El clima en ${activeCity?.name || weather.name} es de ${Math.round(convertTemperature(weather.main.temp, temperatureUnit))}${tempSymbol} - ${getSpanishDescription(weather.weather[0]?.description || '')}`
     : '';
 
   return (
@@ -223,13 +226,13 @@ export default function Home() {
         >
           <View style={styles.mainTempContainer}>
             <View style={styles.tempRow}>
-              <Text style={styles.mainTemp}>{Math.round(weather.main.temp)}</Text>
-              <Text style={styles.tempUnit}>°C</Text>
+              <Text style={styles.mainTemp}>{Math.round(convertTemperature(weather.main.temp, temperatureUnit))}</Text>
+              <Text style={styles.tempUnit}>{tempSymbol}</Text>
             </View>
             <Text style={styles.conditionMaxMin}>
-              {getSpanishDescription(weather.weather[0]?.description || '')} {Math.round(weather.main.temp_max)}° {Math.round(weather.main.temp_min)}°
+              {getSpanishDescription(weather.weather[0]?.description || '')} {Math.round(convertTemperature(weather.main.temp_max, temperatureUnit))}° {Math.round(convertTemperature(weather.main.temp_min, temperatureUnit))}°
             </Text>
-            <Text style={styles.feelsLike}>Sensación térmica {Math.round(weather.main.feels_like)}°</Text>
+            <Text style={styles.feelsLike}>Sensación térmica {Math.round(convertTemperature(weather.main.feels_like, temperatureUnit))}°</Text>
           </View>
 
           <HourlyForecast forecast={hourlyForecast} />
