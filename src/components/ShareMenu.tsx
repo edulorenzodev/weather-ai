@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { View, Text, StyleSheet, Pressable, Modal, Share } from 'react-native';
+import { useRouter } from 'expo-router';
 
 const IoniconsIcon = require('@expo/vector-icons').Ionicons;
 
@@ -10,6 +11,8 @@ interface ShareMenuProps {
 }
 
 const ShareMenuComponent = ({ visible, onClose, weatherText }: ShareMenuProps) => {
+  const router = useRouter();
+  
   const handleShare = async () => {
     try {
       await Share.share({
@@ -19,6 +22,11 @@ const ShareMenuComponent = ({ visible, onClose, weatherText }: ShareMenuProps) =
     } catch (error) {
       console.error('Share error:', error);
     }
+  };
+
+  const handleSettings = () => {
+    onClose();
+    router.push('/settings');
   };
 
   return (
@@ -31,7 +39,7 @@ const ShareMenuComponent = ({ visible, onClose, weatherText }: ShareMenuProps) =
       <Pressable style={styles.overlay} onPress={onClose}>
         <Pressable style={styles.menu} onPress={(e) => e.stopPropagation()}>
           <View style={styles.header}>
-            <Text style={styles.title}>Compartir</Text>
+            <Text style={styles.title}>Menú</Text>
             <Pressable onPress={onClose} hitSlop={8}>
               <IoniconsIcon name="close" size={20} color="rgba(255, 255, 255, 0.6)" />
             </Pressable>
@@ -47,10 +55,10 @@ const ShareMenuComponent = ({ visible, onClose, weatherText }: ShareMenuProps) =
           
           <Pressable 
             style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
-            onPress={onClose}
+            onPress={handleSettings}
           >
-            <IoniconsIcon name="copy-outline" size={22} color="white" />
-            <Text style={styles.optionText}>Copiar al portapapeles</Text>
+            <IoniconsIcon name="settings-outline" size={22} color="white" />
+            <Text style={styles.optionText}>Ajustes</Text>
           </Pressable>
         </Pressable>
       </Pressable>
