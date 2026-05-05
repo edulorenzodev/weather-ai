@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { createMMKV } from 'react-native-mmkv';
+import { MMKV } from 'react-native-mmkv';
 
 export interface City {
   name: string;
@@ -10,7 +10,7 @@ export interface City {
   lon: number;
 }
 
-const storage = createMMKV({
+const storage = new MMKV({
   id: 'cities-storage',
 });
 
@@ -23,7 +23,7 @@ const mmkvStorage = {
     storage.set(name, value);
   },
   removeItem: (name: string) => {
-    storage.remove(name);
+    storage.delete(name);
   },
 };
 
