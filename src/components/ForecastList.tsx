@@ -72,7 +72,7 @@ const ForecastRow = ({ item, index, isLast }: {
 
       <View style={styles.tempContainer}>
         <Text style={styles.tempHigh}>
-          {Math.round(item.main.temp)}°
+          {Math.round(item.main.temp_max)}°
         </Text>
         <Text style={styles.tempLow}>
           {Math.round(item.main.temp_min)}°

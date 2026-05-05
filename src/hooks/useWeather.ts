@@ -64,8 +64,30 @@ export const useWeather = () => {
       if (!isMountedRef.current) return;
 
       setWeather(weatherData);
-      const dailyForecast = forecastData.list.filter((_, index) => index % 8 === 0);
-      setForecast(dailyForecast.slice(0, 5));
+      
+      const dailyGroups: { [key: string]: typeof forecastData.list } = {};
+      forecastData.list.forEach((item: any) => {
+        const date = new Date(item.dt * 1000).toDateString();
+        if (!dailyGroups[date]) {
+          dailyGroups[date] = [];
+        }
+        dailyGroups[date].push(item);
+      });
+
+      const dailyForecast = Object.values(dailyGroups).slice(0, 5).map((dayItems: any[]) => {
+        const temps = dayItems.map(i => i.main.temp);
+        const dayItem = dayItems[Math.floor(dayItems.length / 2)];
+        return {
+          ...dayItem,
+          main: {
+            ...dayItem.main,
+            temp_min: Math.min(...dayItems.map(i => i.main.temp_min)),
+            temp_max: Math.max(...dayItems.map(i => i.main.temp_max)),
+          },
+        };
+      });
+
+      setForecast(dailyForecast);
       setHourlyForecast(forecastData.list.slice(0, 8));
     } catch (err: any) {
       if (axios.isCancel(err)) {
