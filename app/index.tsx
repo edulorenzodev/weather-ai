@@ -11,7 +11,7 @@ import {
   Animated as RNAnimated,
   PanResponder,
 } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, Extrapolation, withSpring } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWeather } from '../src/hooks/useWeather';
@@ -157,6 +157,8 @@ export default function Home() {
   const lastSwipeTime = useRef(0);
   const rotateAnim = useRef(new RNAnimated.Value(0)).current;
   const scrollY = useSharedValue(0);
+  const rotateX = useSharedValue(0);
+  const currentCityIndexRef = useRef(0);
 
   const fadeOverlayStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -166,6 +168,15 @@ export default function Home() {
       Extrapolation.CLAMP
     );
     return { opacity };
+  });
+
+  const rotateStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { perspective: 1000 },
+        { rotateY: `${rotateX.value}deg` }
+      ]
+    };
   });
 
   const panResponder = useRef(
@@ -181,11 +192,29 @@ export default function Home() {
         if (now - lastSwipeTime.current < 300) return;
 
         const SWIPE_THRESHOLD = 50;
+        const currentIndex = currentCityIndexRef.current;
+        const isFirstCity = currentIndex <= 0;
+        const isLastCity = currentIndex >= cities.length - 1;
+
         if (gestureState.dx > SWIPE_THRESHOLD) {
-          goToPreviousCity();
+          if (isFirstCity) {
+            rotateX.value = -15;
+            rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
+          } else {
+            rotateX.value = -90;
+            rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
+            goToPreviousCity();
+          }
           lastSwipeTime.current = now;
         } else if (gestureState.dx < -SWIPE_THRESHOLD) {
-          goToNextCity();
+          if (isLastCity) {
+            rotateX.value = 15;
+            rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
+          } else {
+            rotateX.value = 90;
+            rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
+            goToNextCity();
+          }
           lastSwipeTime.current = now;
         }
       },
@@ -213,6 +242,15 @@ export default function Home() {
       }
     };
   }, [fetchAIRecommendation]);
+
+  useEffect(() => {
+    if (activeCity && cities.length > 0) {
+      const index = cities.findIndex(
+        c => c.name === activeCity.name && c.country === activeCity.country
+      );
+      currentCityIndexRef.current = index >= 0 ? index : 0;
+    }
+  }, [activeCity, cities]);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -271,7 +309,7 @@ export default function Home() {
             }
             showsVerticalScrollIndicator={false}
           >
-            <Animated.View style={[styles.mainTempContainer, fadeOverlayStyle]}>
+            <Animated.View style={[styles.mainTempContainer, fadeOverlayStyle, rotateStyle]}>
               <View style={styles.tempRow}>
                 <Text style={styles.mainTemp}>{Math.round(convertTemperature(weather.main.temp, temperatureUnit))}</Text>
                 <Text style={styles.tempUnit}>{tempSymbol}</Text>
