@@ -168,8 +168,17 @@ weather-ai/
 
 ### 📋 Pendiente
 
-- [ ] Pantalla de detalles por hora (al tocar)
+- [ ] Detalles al tocar en pronóstico de 5 días
 - [ ] Modo offline con datos cacheados
+- [ ] Datos meteorológicos adicionales (presión, visibilidad, índice UV, amanecer/anochecer)
+- [ ] Alertas de clima severo (tormentas, lluvia intensa, ola de calor)
+- [ ] Calidad del aire (AQI)
+- [ ] Gráficos de temperatura
+- [ ] Detalle de humedad por hora
+- [ ] Modo oscuro
+- [ ] Efecto de degradación (fade) en temperatura al hacer scroll
+- [ ] Efecto de rotación en temperatura al cambiar de ciudad con swipe
+- [ ] Iconos dinámicos según hora del día (sol/luna)
 
 ## Licencia
 

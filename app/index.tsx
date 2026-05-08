@@ -11,6 +11,7 @@ import {
   Animated as RNAnimated,
   PanResponder,
 } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWeather } from '../src/hooks/useWeather';
@@ -154,6 +155,18 @@ export default function Home() {
   const [shareMenuVisible, setShareMenuVisible] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSwipeTime = useRef(0);
+  const rotateAnim = useRef(new RNAnimated.Value(0)).current;
+  const scrollY = useSharedValue(0);
+
+  const fadeOverlayStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      scrollY.value,
+      [0, 120],
+      [1, 0.15],
+      Extrapolation.CLAMP
+    );
+    return { opacity };
+  });
 
   const panResponder = useRef(
     PanResponder.create({
@@ -241,6 +254,10 @@ export default function Home() {
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
+            onScroll={(event) => {
+              scrollY.value = event.nativeEvent.contentOffset.y;
+            }}
+            scrollEventThrottle={16}
             refreshControl={
               <RefreshControl
                 refreshing={isRefreshing}
@@ -252,7 +269,7 @@ export default function Home() {
             }
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.mainTempContainer}>
+            <Animated.View style={[styles.mainTempContainer, fadeOverlayStyle]}>
               <View style={styles.tempRow}>
                 <Text style={styles.mainTemp}>{Math.round(convertTemperature(weather.main.temp, temperatureUnit))}</Text>
                 <Text style={styles.tempUnit}>{tempSymbol}</Text>
@@ -261,7 +278,7 @@ export default function Home() {
                 {getSpanishDescription(weather.weather[0]?.description || '')} {Math.round(convertTemperature(weather.main.temp_max, temperatureUnit))}° {Math.round(convertTemperature(weather.main.temp_min, temperatureUnit))}°
               </Text>
               <Text style={styles.feelsLike}>Sensación térmica {Math.round(convertTemperature(weather.main.feels_like, temperatureUnit))}°</Text>
-            </View>
+            </Animated.View>
 
             <HourlyForecast forecast={hourlyForecast} />
             <AIRecommendationCard recommendation={recommendation} loading={aiLoading} />
@@ -363,6 +380,15 @@ const styles = StyleSheet.create({
   mainTempContainer: {
     alignItems: 'center',
     paddingVertical: 20,
+  },
+  fadeOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 200,
+    zIndex: 10,
+    pointerEvents: 'none',
   },
   mainTemp: {
     fontSize: 120,
