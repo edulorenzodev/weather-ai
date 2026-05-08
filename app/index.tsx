@@ -221,11 +221,13 @@ export default function Home() {
     setIsRefreshing(false);
   }, [refetch, refetchPlaces]);
 
-  if (loading) {
+  const hasData = weather !== null;
+
+  if (loading && !hasData) {
     return <LoadingScreen />;
   }
 
-  if (error || !weather) {
+  if ((error || !weather) && !hasData) {
     return <ErrorScreen error={error || ''} onRetry={refetch} />;
   }
 
