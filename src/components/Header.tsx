@@ -28,7 +28,7 @@ const AddButton = ({ onPress }: { onPress: () => void }) => {
   return (
     <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
       <Animated.View style={[styles.addButton, animatedStyle]}>
-        <Text style={styles.addIcon}>+</Text>
+        <Ionicons name="add" size={28} color="white" />
       </Animated.View>
     </Pressable>
   );
@@ -69,7 +69,7 @@ const HeaderComponent = ({ cityName, onMenuPress }: HeaderProps) => {
     <View style={styles.container}>
       <AddButton onPress={handleAddPress} />
       <View style={styles.titleContainer}>
-        <Ionicons name="location-outline" size={20} color="white" style={styles.locationIcon} />
+        <Ionicons name="location-outline" size={24} color="white" style={styles.locationIcon} />
         <Text style={styles.title} numberOfLines={1}>{cityName}</Text>
       </View>
       <MenuButton onPress={onMenuPress} />
@@ -88,24 +88,11 @@ const styles = StyleSheet.create({
   addButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
   },
   addIcon: {
-    fontSize: 24,
+    fontSize: 28,
     color: '#ffffff',
     fontWeight: '300',
   },
@@ -128,24 +115,11 @@ const styles = StyleSheet.create({
   menuButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
   },
   menuIcon: {
-    fontSize: 20,
+    fontSize: 24,
     color: '#ffffff',
     fontWeight: 'bold',
   },

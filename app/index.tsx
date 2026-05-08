@@ -270,6 +270,10 @@ export default function Home() {
   }
 
   const weatherCondition = (weather.weather[0]?.main || 'Clear') as WeatherCondition;
+  const now = Math.floor(Date.now() / 1000);
+  const isNight = weather.sys?.sunrise && weather.sys?.sunset 
+    ? now < weather.sys.sunrise || now >= weather.sys.sunset 
+    : false;
 
   const handleAddCity = () => {
     console.log('Add city pressed');
@@ -286,7 +290,7 @@ export default function Home() {
 
   return (
     <View style={styles.container} {...panResponder.panHandlers}>
-      <WeatherBackground condition={weatherCondition} />
+      <WeatherBackground condition={weatherCondition} isNight={isNight} />
       <SafeAreaView style={styles.safeArea}>
         <Header cityName={activeCity?.name || weather?.name || ''} onMenuPress={handleMenuPress} />
         <CityIndicator />

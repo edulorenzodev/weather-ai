@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   sunContainer: {
     position: 'absolute',
     top: -30,
-    right: -20,
+    right: -30,
     width: 120,
     height: 120,
     alignItems: 'center',
@@ -172,10 +172,6 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    shadowColor: '#fff',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 30,
   },
   cloudContainer: {
     position: 'absolute',
