@@ -21,6 +21,10 @@ export interface WeatherData {
     speed: number;
   };
   visibility: number;
+  sys?: {
+    sunrise: number;
+    sunset: number;
+  };
 }
 
 export interface ForecastItem {

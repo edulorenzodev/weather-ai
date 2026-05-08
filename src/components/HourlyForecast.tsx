@@ -2,20 +2,9 @@ import { memo, useMemo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Platform, Animated, ScrollView } from 'react-native';
 import { ForecastItem } from '../types';
 import { useSettingsStore, convertTemperature, convertWindSpeed } from '../store/settingsStore';
+import { getWeatherIconFromTimestamp } from '../utils/weatherIcons';
 
 const Ionicons = require('@expo/vector-icons').Ionicons;
-
-const getWeatherIcon = (main: string): string => {
-  const icons: Record<string, string> = {
-    Clear: '☀️',
-    Clouds: '☁️',
-    Rain: '🌧️',
-    Snow: '❄️',
-    Thunderstorm: '⛈️',
-    Drizzle: '🌦️',
-  };
-  return icons[main] || '🌤️';
-};
 
 const getWindSpeed = (speed: number, windSpeedUnit: string): string => {
   const converted = Math.round(convertWindSpeed(speed * 3.6, windSpeedUnit as any));
@@ -66,7 +55,7 @@ const HourItem = ({ item, index }: HourItemProps) => {
   return (
     <Animated.View style={[styles.hourItem, { opacity, transform: [{ translateY }] }]}>
       <Text style={styles.hourTemp}>{Math.round(convertTemperature(item.main.temp, temperatureUnit))}°</Text>
-      <Text style={styles.hourIcon}>{getWeatherIcon(item.weather[0].main)}</Text>
+      <Text style={styles.hourIcon}>{getWeatherIconFromTimestamp(item.weather[0].main, item.dt)}</Text>
       <Text style={styles.hourWind}>{getWindSpeed(item.wind?.speed || 0, windSpeedUnit)}</Text>
       <Text style={styles.hourTime}>{formatHour(index)}</Text>
     </Animated.View>

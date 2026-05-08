@@ -2,20 +2,9 @@ import { memo, useMemo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
 import { ForecastItem } from '../types';
 import { useSettingsStore, convertTemperature } from '../store/settingsStore';
+import { getWeatherIconFromTimestamp } from '../utils/weatherIcons';
 
 const Ionicons = require('@expo/vector-icons').Ionicons;
-
-const getWeatherIcon = (main: string): string => {
-  const icons: Record<string, string> = {
-    Clear: '☀️',
-    Clouds: '☁️',
-    Rain: '🌧️',
-    Snow: '❄️',
-    Thunderstorm: '⛈️',
-    Drizzle: '🌦️',
-  };
-  return icons[main] || '🌤️';
-};
 
 const getDayName = (timestamp: number): string => {
   const date = new Date(timestamp * 1000);
@@ -68,7 +57,7 @@ const ForecastRow = ({ item, index, isLast }: {
       </View>
 
       <View style={styles.iconContainer}>
-        <Text style={styles.weatherIcon}>{getWeatherIcon(item.weather[0].main)}</Text>
+        <Text style={styles.weatherIcon}>{getWeatherIconFromTimestamp(item.weather[0].main, item.dt)}</Text>
       </View>
 
       <View style={styles.tempContainer}>

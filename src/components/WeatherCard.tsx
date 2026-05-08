@@ -2,21 +2,7 @@ import { memo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
 import { WeatherData } from '../types';
 import { useSettingsStore, convertTemperature, convertWindSpeed } from '../store/settingsStore';
-
-const getWeatherIcon = (main: string): string => {
-  const icons: Record<string, string> = {
-    Clear: '☀️',
-    Clouds: '☁️',
-    Rain: '🌧️',
-    Snow: '❄️',
-    Thunderstorm: '⛈️',
-    Drizzle: '🌦️',
-    Mist: '🌫️',
-    Fog: '🌫️',
-    Haze: '🌫️',
-  };
-  return icons[main] || '🌤️';
-};
+import { getWeatherIcon } from '../utils/weatherIcons';
 
 const getSpanishCondition = (condition: string): string => {
   const translations: Record<string, string> = {
@@ -153,6 +139,10 @@ const WeatherCardComponent = ({ weather }: { weather: WeatherData }) => {
   const visibility = (weather.visibility / 1000).toFixed(1);
   const pressure = weather.main.pressure;
   const condition = weather.weather[0].main;
+  const now = Math.floor(Date.now() / 1000);
+  const sunrise = weather.sys?.sunrise;
+  const sunset = weather.sys?.sunset;
+  const weatherIcon = getWeatherIcon(condition, now, sunrise, sunset);
   const windUnitLabel = windSpeedUnit === 'kmh' ? 'km/h' : 'mph';
 
   const metrics = [
@@ -173,7 +163,7 @@ const WeatherCardComponent = ({ weather }: { weather: WeatherData }) => {
           <Text style={styles.description}>{getSpanishDescription(weather.weather[0].description)}</Text>
         </View>
         <Animated.Text style={[styles.weatherIcon, { transform: [{ scale: iconScale }], opacity: iconScale }]}>
-          {getWeatherIcon(condition)}
+          {weatherIcon}
         </Animated.Text>
       </View>
 
