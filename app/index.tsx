@@ -197,23 +197,23 @@ export default function Home() {
         const isLastCity = currentIndex >= cities.length - 1;
 
         if (gestureState.dx > SWIPE_THRESHOLD) {
-          if (isFirstCity) {
-            rotateX.value = -15;
-            rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
-          } else {
-            rotateX.value = -90;
-            rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
-            goToPreviousCity();
-          }
-          lastSwipeTime.current = now;
-        } else if (gestureState.dx < -SWIPE_THRESHOLD) {
           if (isLastCity) {
             rotateX.value = 15;
             rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
           } else {
-            rotateX.value = 90;
+            rotateX.value = -90;
             rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
             goToNextCity();
+          }
+          lastSwipeTime.current = now;
+        } else if (gestureState.dx < -SWIPE_THRESHOLD) {
+          if (isFirstCity) {
+            rotateX.value = -15;
+            rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
+          } else {
+            rotateX.value = 90;
+            rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
+            goToPreviousCity();
           }
           lastSwipeTime.current = now;
         }
