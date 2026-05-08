@@ -162,14 +162,14 @@ weather-ai/
 - [x] Gestión de ciudades (buscar, agregar, reordenar, eliminar)
 - [x] Primera ciudad de la lista como ciudad activa
 - [x] Persistencia de ciudades con MMKV
+- [x] Menú emergente (Compartir, Ajustes)
+- [x] Cambio de ciudad con swipe horizontal entre ciudades guardadas
+- [x] Indicador visual de puntos para navegación entre ciudades
 
 ### 📋 Pendiente
 
-- [ ] Menú emergente (Compartir, Ajustes)
 - [ ] Pantalla de detalles por hora (al tocar)
-- [ ] Notificaciones push para cambios de clima
 - [ ] Modo offline con datos cacheados
-- [ ] Widget para la pantalla de inicio
 
 ## Licencia
 

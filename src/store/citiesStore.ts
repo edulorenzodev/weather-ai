@@ -18,6 +18,8 @@ interface CitiesState {
   reorderCities: (from: number, to: number) => void;
   setActiveCity: (city: City) => void;
   clearCities: () => void;
+  goToNextCity: () => void;
+  goToPreviousCity: () => void;
 }
 
 const MAX_CITIES = 10;
@@ -90,6 +92,28 @@ export const useCitiesStore = create<CitiesState>()(
 
       clearCities: () => {
         set({ cities: [], activeCity: null });
+      },
+
+      goToNextCity: () => {
+        const { cities, activeCity } = get();
+        if (cities.length <= 1 || !activeCity) return;
+        
+        const currentIndex = cities.findIndex(
+          c => c.name === activeCity.name && c.country === activeCity.country
+        );
+        const nextIndex = (currentIndex + 1) % cities.length;
+        set({ activeCity: cities[nextIndex] });
+      },
+
+      goToPreviousCity: () => {
+        const { cities, activeCity } = get();
+        if (cities.length <= 1 || !activeCity) return;
+        
+        const currentIndex = cities.findIndex(
+          c => c.name === activeCity.name && c.country === activeCity.country
+        );
+        const prevIndex = (currentIndex - 1 + cities.length) % cities.length;
+        set({ activeCity: cities[prevIndex] });
       },
     }),
     {

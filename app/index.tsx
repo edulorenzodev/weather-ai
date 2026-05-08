@@ -8,7 +8,8 @@ import {
   StyleSheet,
   Platform,
   Pressable,
-  Animated,
+  Animated as RNAnimated,
+  PanResponder,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,6 +20,7 @@ import { useCitiesStore } from '../src/store/citiesStore';
 import { useSettingsStore, convertTemperature, convertWindSpeed } from '../src/store/settingsStore';
 import { Header } from '../src/components/Header';
 import { ShareMenu } from '../src/components/ShareMenu';
+import { CityIndicator } from '../src/components/CityIndicator';
 import { WeatherBackground, WeatherCondition } from '../src/components/WeatherBackground';
 import { ForecastList } from '../src/components/ForecastList';
 import { HourlyForecast } from '../src/components/HourlyForecast';
@@ -61,17 +63,17 @@ const getSpanishDescription = (description: string): string => {
 };
 
 const LoadingScreen = () => {
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const pulseAnim = useRef(new RNAnimated.Value(1)).current;
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
+    RNAnimated.loop(
+      RNAnimated.sequence([
+        RNAnimated.timing(pulseAnim, {
           toValue: 1.1,
           duration: 800,
           useNativeDriver: true,
         }),
-        Animated.timing(pulseAnim, {
+        RNAnimated.timing(pulseAnim, {
           toValue: 1,
           duration: 800,
           useNativeDriver: true,
@@ -84,9 +86,9 @@ const LoadingScreen = () => {
     <LinearGradient colors={['#1e3a5f', '#0d1b2a']} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.centered}>
-          <Animated.View style={[styles.loadingIcon, { transform: [{ scale: pulseAnim }] }]}>
+          <RNAnimated.View style={[styles.loadingIcon, { transform: [{ scale: pulseAnim }] }]}>
             <Text style={styles.loadingEmoji}>🌤️</Text>
-          </Animated.View>
+          </RNAnimated.View>
           <Text style={styles.loadingTitle}>WeatherAI</Text>
           <Text style={styles.loadingSubtitle}>Cargando datos del clima...</Text>
           <ActivityIndicator size="large" color="#60a5fa" style={{ marginTop: 32 }} />
@@ -97,10 +99,10 @@ const LoadingScreen = () => {
 };
 
 const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void }) => {
-  const buttonScale = useRef(new Animated.Value(1)).current;
+  const buttonScale = useRef(new RNAnimated.Value(1)).current;
 
   const handlePressIn = () => {
-    Animated.spring(buttonScale, {
+    RNAnimated.spring(buttonScale, {
       toValue: 0.95,
       damping: 15,
       stiffness: 300,
@@ -109,7 +111,7 @@ const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void })
   };
 
   const handlePressOut = () => {
-    Animated.spring(buttonScale, {
+    RNAnimated.spring(buttonScale, {
       toValue: 1,
       damping: 15,
       stiffness: 300,
@@ -128,11 +130,11 @@ const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void })
           <Text style={styles.errorMessage}>
             {error || 'Verifica tu conexión e intenta de nuevo'}
           </Text>
-          <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+          <RNAnimated.View style={{ transform: [{ scale: buttonScale }] }}>
             <Pressable style={styles.retryButton} onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onRetry}>
               <Text style={styles.retryText}>Intentar de nuevo</Text>
             </Pressable>
-          </Animated.View>
+          </RNAnimated.View>
         </View>
       </SafeAreaView>
     </LinearGradient>
@@ -141,7 +143,7 @@ const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void })
 
 export default function Home() {
   const { weather, forecast, hourlyForecast, loading, error, refetch } = useWeather();
-  const { activeCity } = useCitiesStore();
+  const { activeCity, cities, goToNextCity, goToPreviousCity } = useCitiesStore();
   const { temperatureUnit, windSpeedUnit } = useSettingsStore();
   const { recommendation, loading: aiLoading, getRecommendation } = useAIRecommendation();
   const { beaches, mountains, loading: placesLoading, refetch: refetchPlaces } = usePlaces(
@@ -151,6 +153,31 @@ export default function Home() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [shareMenuVisible, setShareMenuVisible] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSwipeTime = useRef(0);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 10;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        // Solo prevenimos el scroll horizontal si es un swipe intentional
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        const now = Date.now();
+        if (now - lastSwipeTime.current < 300) return;
+
+        const SWIPE_THRESHOLD = 50;
+        if (gestureState.dx > SWIPE_THRESHOLD) {
+          goToPreviousCity();
+          lastSwipeTime.current = now;
+        } else if (gestureState.dx < -SWIPE_THRESHOLD) {
+          goToNextCity();
+          lastSwipeTime.current = now;
+        }
+      },
+    })
+  ).current;
 
   const fetchAIRecommendation = useCallback(() => {
     if (weather && beaches && mountains) {
@@ -205,47 +232,48 @@ export default function Home() {
     : '';
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       <WeatherBackground condition={weatherCondition} />
       <SafeAreaView style={styles.safeArea}>
         <Header cityName={activeCity?.name || weather?.name || ''} onMenuPress={handleMenuPress} />
+        <CityIndicator />
 
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={handleRefresh}
-              tintColor="#60a5fa"
-              colors={['#60a5fa']}
-              progressBackgroundColor="rgba(255,255,255,0.1)"
-            />
-          }
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.mainTempContainer}>
-            <View style={styles.tempRow}>
-              <Text style={styles.mainTemp}>{Math.round(convertTemperature(weather.main.temp, temperatureUnit))}</Text>
-              <Text style={styles.tempUnit}>{tempSymbol}</Text>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={handleRefresh}
+                tintColor="#60a5fa"
+                colors={['#60a5fa']}
+                progressBackgroundColor="rgba(255,255,255,0.1)"
+              />
+            }
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.mainTempContainer}>
+              <View style={styles.tempRow}>
+                <Text style={styles.mainTemp}>{Math.round(convertTemperature(weather.main.temp, temperatureUnit))}</Text>
+                <Text style={styles.tempUnit}>{tempSymbol}</Text>
+              </View>
+              <Text style={styles.conditionMaxMin}>
+                {getSpanishDescription(weather.weather[0]?.description || '')} {Math.round(convertTemperature(weather.main.temp_max, temperatureUnit))}° {Math.round(convertTemperature(weather.main.temp_min, temperatureUnit))}°
+              </Text>
+              <Text style={styles.feelsLike}>Sensación térmica {Math.round(convertTemperature(weather.main.feels_like, temperatureUnit))}°</Text>
             </View>
-            <Text style={styles.conditionMaxMin}>
-              {getSpanishDescription(weather.weather[0]?.description || '')} {Math.round(convertTemperature(weather.main.temp_max, temperatureUnit))}° {Math.round(convertTemperature(weather.main.temp_min, temperatureUnit))}°
-            </Text>
-            <Text style={styles.feelsLike}>Sensación térmica {Math.round(convertTemperature(weather.main.feels_like, temperatureUnit))}°</Text>
-          </View>
 
-          <HourlyForecast forecast={hourlyForecast} />
-          <AIRecommendationCard recommendation={recommendation} loading={aiLoading} />
-          <ForecastList forecast={forecast} />
-          <PlacesList beaches={beaches} mountains={mountains} />
-        </ScrollView>
-      </SafeAreaView>
-      <ShareMenu
-        visible={shareMenuVisible}
-        onClose={() => setShareMenuVisible(false)}
-        weatherText={weatherShareText}
-      />
+            <HourlyForecast forecast={hourlyForecast} />
+            <AIRecommendationCard recommendation={recommendation} loading={aiLoading} />
+            <ForecastList forecast={forecast} />
+            <PlacesList beaches={beaches} mountains={mountains} />
+          </ScrollView>
+        </SafeAreaView>
+        <ShareMenu
+          visible={shareMenuVisible}
+          onClose={() => setShareMenuVisible(false)}
+          weatherText={weatherShareText}
+        />
     </View>
   );
 }
