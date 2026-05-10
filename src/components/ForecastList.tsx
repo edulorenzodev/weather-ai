@@ -1,5 +1,6 @@
 import { memo, useMemo, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
 import { ForecastItem } from '../types';
 import { useSettingsStore, convertTemperature } from '../store/settingsStore';
 import { getWeatherIconFromTimestamp } from '../utils/weatherIcons';
@@ -99,24 +100,33 @@ const ForecastListComponent = ({ forecast }: { forecast: ForecastItem[] }) => {
     ]).start();
   }, []);
 
+  const handlePress = () => {
+    router.push({
+      pathname: '/forecast-detail',
+      params: { forecast: JSON.stringify(forecast.slice(0, 5)) },
+    });
+  };
+
   if (!dailyForecast || dailyForecast.length === 0) return null;
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.card, { opacity: cardOpacity, transform: [{ translateY: cardTranslateY }] }]}>
-        <View style={styles.header}>
-          <Ionicons name="calendar-outline" size={20} color="rgba(255, 255, 255, 0.5)" />
-          <Text style={styles.headerText}>Pronóstico semanal</Text>
-        </View>
-        {dailyForecast.map((item, index) => (
-          <ForecastRow
-            key={item.dt}
-            item={item}
-            index={index}
-            isLast={index === dailyForecast.length - 1}
-          />
-        ))}
-      </Animated.View>
+      <TouchableOpacity onPress={handlePress} activeOpacity={0.8}>
+        <Animated.View style={[styles.card, { opacity: cardOpacity, transform: [{ translateY: cardTranslateY }] }]}>
+          <View style={styles.header}>
+            <Ionicons name="calendar-outline" size={20} color="rgba(255, 255, 255, 0.5)" />
+            <Text style={styles.headerText}>Pronóstico semanal</Text>
+          </View>
+          {dailyForecast.map((item, index) => (
+            <ForecastRow
+              key={item.dt}
+              item={item}
+              index={index}
+              isLast={index === dailyForecast.length - 1}
+            />
+          ))}
+        </Animated.View>
+      </TouchableOpacity>
     </View>
   );
 };

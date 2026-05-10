@@ -21,11 +21,11 @@ Aplicación del tiempo con IA que te sugiere actividades basadas en el clima y l
 
 ## APIs Integradas
 
-| Servicio | Propósito | Coste |
-|----------|-----------|-------|
-| OpenWeatherMap | Datos del clima | Gratis (1000 calls/día) |
-| Foursquare Places | Lugares cercanos | Gratis (10k calls/mes) |
-| OpenAI GPT-4o | Recomendaciones IA | Pay-as-you-go |
+| Servicio          | Propósito          | Coste                   |
+| ----------------- | ------------------ | ----------------------- |
+| OpenWeatherMap    | Datos del clima    | Gratis (1000 calls/día) |
+| Foursquare Places | Lugares cercanos   | Gratis (10k calls/mes)  |
+| OpenAI GPT-4o     | Recomendaciones IA | Pay-as-you-go           |
 
 ## Instalación
 
@@ -137,11 +137,11 @@ weather-ai/
 
 ## Lógica de Recomendaciones
 
-| Condición | Recomendación |
-|-----------|---------------|
-| Soleado + >20°C + playa cerca | Ir a la playa 🏖️ |
-| Buen clima + montaña cerca | Excursión ⛰️ |
-| Lluvia o frío | Quedarse en casa 🏠 |
+| Condición                     | Recomendación      |
+| ----------------------------- | ------------------ |
+| Soleado + >20°C + playa cerca | Ir a la playa 🏖️    |
+| Buen clima + montaña cerca    | Excursión ⛰️        |
+| Lluvia o frío                 | Quedarse en casa 🏠 |
 
 ## Roadmap
 
@@ -165,21 +165,25 @@ weather-ai/
 - [x] Menú emergente (Compartir, Ajustes)
 - [x] Cambio de ciudad con swipe horizontal entre ciudades guardadas
 - [x] Indicador visual de puntos para navegación entre ciudades
+- [x] Efecto de degradación (fade) en temperatura al hacer scroll
+- [x] Evitar pantalla de carga al cambiar de ciudad
+- [x] Efecto de rotación en temperatura al cambiar de ciudad con swipe
+- [x] Límites de navegación (no ciclar en primera/última ciudad)
 
 ### 📋 Pendiente
 
 - [ ] Detalles al tocar en pronóstico de 5 días
 - [ ] Modo offline con datos cacheados
 - [ ] Datos meteorológicos adicionales (presión, visibilidad, índice UV, amanecer/anochecer)
+- [ ] IA, mostrar botón View Detail 
 - [ ] Alertas de clima severo (tormentas, lluvia intensa, ola de calor)
 - [ ] Calidad del aire (AQI)
 - [ ] Gráficos de temperatura
 - [ ] Detalle de humedad por hora
 - [ ] Modo oscuro
-- [ ] Efecto de degradación (fade) en temperatura al hacer scroll
-- [ ] Efecto de rotación en temperatura al cambiar de ciudad con swipe
 - [ ] Iconos dinámicos según hora del día (sol/luna)
-
-## Licencia
-
-MIT License
+- [ ] Prompt Engineering para Consultas
+- [ ] Impementar estética de "Glassmorphism"
+- [ ] Interfaz de Comparación de Fuentes: Permite a los usuarios visualizar y comparar datos de múltiples proveedores (AccuWeather, NOAA, ECMWF, etc.) lado a lado para que ellos decidan cuál es más fiable en su zona
+- [ ] Resolución del "Window Test": Integra datos de estaciones meteorológicas personales y sensores IoT cercanos (crowdsourcing) para evitar que la app marque "sol" mientras el usuario ve que está lloviendo en su calle
+- [ ] 

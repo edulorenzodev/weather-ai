@@ -11,6 +11,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="manage-cities" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="forecast-detail" options={{ headerShown: false }} />
       </Stack>
     </GestureHandlerRootView>
   );
