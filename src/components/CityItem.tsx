@@ -6,30 +6,26 @@ const IoniconsIcon = require('@expo/vector-icons').Ionicons;
 
 interface CityItemProps {
   city: City;
-  isActive: boolean;
+  isFirst: boolean;
   onPress?: () => void;
   onDelete?: () => void;
   drag?: () => void;
-  isActiveAnim?: Animated.AnimatedInterpolation<number>;
 }
 
 const CityItemComponent = ({ 
   city, 
-  isActive, 
-  onPress, 
+  isFirst,
   onDelete,
   drag,
-  isActiveAnim,
 }: CityItemProps) => {
   return (
     <Pressable 
-      onPress={onPress}
+      onPress={drag}
       onLongPress={drag}
     >
       <Animated.View style={[
         styles.container,
-        isActive && styles.activeContainer,
-        isActiveAnim ? { transform: [{ scale: isActiveAnim }] } : undefined,
+        isFirst && styles.activeContainer,
       ]}>
         <View style={styles.dragHandle}>
           <IoniconsIcon name="menu" size={20} color="rgba(255, 255, 255, 0.4)" />
@@ -37,14 +33,7 @@ const CityItemComponent = ({
         
         <View style={styles.content}>
           <View style={styles.textContainer}>
-            <View style={styles.nameRow}>
-              <Text style={styles.cityName}>{city.name}</Text>
-              {isActive && (
-                <View style={styles.activeBadge}>
-                  <Text style={styles.activeText}>Activa</Text>
-                </View>
-              )}
-            </View>
+            <Text style={styles.cityName}>{city.name}</Text>
             <Text style={styles.country}>{[city.state, city.country].filter(Boolean).join(', ')}</Text>
           </View>
           

@@ -22,11 +22,9 @@ export default function ManageCitiesScreen() {
   
   const { 
     cities, 
-    activeCity, 
     addCity, 
     removeCity, 
     reorderCities,
-    setActiveCity,
   } = useCitiesStore();
 
   const handleAddCity = useCallback((city: City) => {
@@ -44,30 +42,20 @@ export default function ManageCitiesScreen() {
     }
   }, [reorderCities]);
 
-  const handleSelectCity = useCallback((city: City) => {
-    setActiveCity(city);
-  }, [setActiveCity]);
-
-  const renderCityItem = useCallback(({ item, drag, isActive }: RenderItemParams<City>) => {
-    const isCityActive = activeCity && 
-      activeCity.name === item.name && 
-      activeCity.country === item.country;
-    const index = cities.findIndex(
-      c => c.name === item.name && c.country === item.country
-    );
+  const renderCityItem = useCallback(({ item, drag, getIndex }: RenderItemParams<City>) => {
+    const index = getIndex() ?? 0;
     
     return (
       <ScaleDecorator>
         <CityItem
           city={item}
-          isActive={isCityActive || false}
+          isFirst={index === 0}
           drag={drag}
-          onPress={() => handleSelectCity(item)}
           onDelete={() => handleDeleteCity(index)}
         />
       </ScaleDecorator>
     );
-  }, [cities, activeCity, handleDeleteCity, handleSelectCity]);
+  }, [handleDeleteCity]);
 
   return (
     <GestureHandlerRootView style={styles.container}>

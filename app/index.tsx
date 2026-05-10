@@ -145,6 +145,7 @@ const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void })
 export default function Home() {
   const { weather, forecast, hourlyForecast, loading, error, refetch } = useWeather();
   const { activeCity, cities, goToNextCity, goToPreviousCity } = useCitiesStore();
+  const citiesFromStore = useCitiesStore((state) => state.cities);
   const { temperatureUnit, windSpeedUnit } = useSettingsStore();
   const { recommendation, loading: aiLoading, getRecommendation } = useAIRecommendation();
   const { beaches, mountains, loading: placesLoading, refetch: refetchPlaces } = usePlaces(
@@ -192,9 +193,10 @@ export default function Home() {
         if (now - lastSwipeTime.current < 300) return;
 
         const SWIPE_THRESHOLD = 50;
+        const currentCities = useCitiesStore.getState().cities;
         const currentIndex = currentCityIndexRef.current;
         const isFirstCity = currentIndex <= 0;
-        const isLastCity = currentIndex >= cities.length - 1;
+        const isLastCity = currentIndex >= currentCities.length - 1;
 
         if (gestureState.dx > SWIPE_THRESHOLD) {
           if (isLastCity) {
@@ -244,10 +246,12 @@ export default function Home() {
   }, [fetchAIRecommendation]);
 
   useEffect(() => {
-    if (activeCity && cities.length > 0) {
-      const index = cities.findIndex(
-        c => c.name === activeCity.name && c.country === activeCity.country
-      );
+    if (cities.length > 0) {
+      const index = activeCity 
+        ? cities.findIndex(
+            c => c.name === activeCity.name && c.country === activeCity.country
+          )
+        : 0;
       currentCityIndexRef.current = index >= 0 ? index : 0;
     }
   }, [activeCity, cities]);
