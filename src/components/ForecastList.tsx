@@ -4,20 +4,9 @@ import { router } from 'expo-router';
 import { ForecastItem } from '../types';
 import { useSettingsStore, convertTemperature } from '../store/settingsStore';
 import { getWeatherIconFromTimestamp } from '../utils/weatherIcons';
+import { getFullDayName, getShortDay } from '../utils/dateUtils';
 
 const Ionicons = require('@expo/vector-icons').Ionicons;
-
-const getDayName = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
-  const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-  return days[date.getDay()];
-};
-
-const getShortDay = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
-  const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-  return days[date.getDay()];
-};
 
 const ForecastRow = ({ item, index, isLast }: { 
   item: ForecastItem; 
@@ -53,7 +42,7 @@ const ForecastRow = ({ item, index, isLast }: {
           {index === 0 ? 'Hoy' : getShortDay(item.dt)}
         </Text>
         <Text style={styles.dayFull}>
-          {getDayName(item.dt).slice(0, 3)}
+          {getFullDayName(item.dt).slice(0, 3)}
         </Text>
       </View>
 

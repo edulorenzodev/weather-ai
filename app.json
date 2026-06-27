@@ -4,11 +4,11 @@
     "slug": "weather-ai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/custom-icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "weatherai",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/custom-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#0066cc"
     },
@@ -22,7 +22,7 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#0066cc",
-        "foregroundImage": "./assets/android-icon-foreground.png",
+        "foregroundImage": "./assets/custom-icon.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
@@ -36,7 +36,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/custom-icon.png",
       "bundler": "metro"
     },
     "plugins": [

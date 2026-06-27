@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import axios from 'axios';
 import { Place } from '../types';
 import { searchBeaches, searchMountains } from '../services/placesService';
 
@@ -30,9 +31,10 @@ export const usePlaces = (lat?: number, lon?: number) => {
       setLoading(true);
       setError(null);
 
+      const signal = abortControllerRef.current?.signal;
       const [beachesData, mountainsData] = await Promise.all([
-        searchBeaches(lat, lon),
-        searchMountains(lat, lon),
+        searchBeaches(lat, lon, signal),
+        searchMountains(lat, lon, signal),
       ]);
 
       if (!isMountedRef.current) return;
@@ -40,7 +42,7 @@ export const usePlaces = (lat?: number, lon?: number) => {
       setBeaches(beachesData);
       setMountains(mountainsData);
     } catch (err: any) {
-      if (err.name === 'AbortError') {
+      if (axios.isCancel(err)) {
         return;
       }
       console.error('Places error:', err);

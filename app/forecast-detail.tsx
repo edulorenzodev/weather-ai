@@ -4,29 +4,11 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { ForecastItem } from '../src/types';
 import { useSettingsStore, convertTemperature } from '../src/store/settingsStore';
 import { getWeatherIconFromTimestamp } from '../src/utils/weatherIcons';
+import { getFullDayName, getDateString } from '../src/utils/dateUtils';
 
 const Ionicons = require('@expo/vector-icons').Ionicons;
 
 const { width } = Dimensions.get('window');
-
-const getFullDayName = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
-  const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-  return days[date.getDay()];
-};
-
-const getShortDay = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
-  const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-  return days[date.getDay()];
-};
-
-const getDateString = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
-  const day = date.getDate();
-  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-  return `${day} ${months[date.getMonth()]}`;
-};
 
 const ForecastSlide = ({ item, index, scrollX }: {
   item: ForecastItem;

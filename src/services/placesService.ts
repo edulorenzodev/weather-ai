@@ -25,7 +25,8 @@ export const searchPlaces = async (
   lat: number,
   lon: number,
   categoryIds: (number | string)[],
-  searchQuery: string
+  searchQuery: string,
+  signal?: AbortSignal
 ): Promise<Place[]> => {
   if (!API_KEY || API_KEY === 'demo_key' || API_KEY === 'YOUR_FOURSQUARE_API_KEY') {
     console.warn('Foursquare API key not configured');
@@ -46,6 +47,7 @@ export const searchPlaces = async (
         authorization: `Bearer ${API_KEY}`,
       },
       timeout: 15000,
+      signal,
     });
 
     let results: Place[] = response.data?.results || [];
@@ -66,8 +68,8 @@ export const searchPlaces = async (
   }
 };
 
-export const searchBeaches = (lat: number, lon: number) =>
-  searchPlaces(lat, lon, BEACH_CATEGORY_IDS, 'beach');
+export const searchBeaches = (lat: number, lon: number, signal?: AbortSignal) =>
+  searchPlaces(lat, lon, BEACH_CATEGORY_IDS, 'beach', signal);
 
-export const searchMountains = (lat: number, lon: number) =>
-  searchPlaces(lat, lon, NATURE_CATEGORY_IDS, 'Mountain');
+export const searchMountains = (lat: number, lon: number, signal?: AbortSignal) =>
+  searchPlaces(lat, lon, NATURE_CATEGORY_IDS, 'Mountain', signal);

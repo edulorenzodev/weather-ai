@@ -12,11 +12,6 @@ const getWindSpeed = (speed: number, windSpeedUnit: string): string => {
   return `${converted} ${unit}`;
 };
 
-const getHourFromTimestamp = (timestamp: number): string => {
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleTimeString('es-ES', { hour: '2-digit', hour12: false });
-};
-
 const formatHour = (index: number): string => {
   if (index === 0) return 'Ahora';
   const date = new Date();

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
 import { WeatherData } from '../types';
 import { useSettingsStore, convertTemperature, convertWindSpeed } from '../store/settingsStore';
 import { getWeatherIcon } from '../utils/weatherIcons';
+import { getSpanishDescription } from '../utils/translations';
 
 const getSpanishCondition = (condition: string): string => {
   const translations: Record<string, string> = {
@@ -17,41 +18,6 @@ const getSpanishCondition = (condition: string): string => {
     Haze: 'Bruma',
   };
   return translations[condition] || condition;
-};
-
-const getSpanishDescription = (description: string): string => {
-  const translations: Record<string, string> = {
-    'clear sky': 'cielo despejado',
-    'few clouds': 'pocas nubes',
-    'scattered clouds': 'nubes dispersas',
-    'broken clouds': 'nubes fragmentadas',
-    'overcast clouds': 'nublado',
-    'light rain': 'lluvia ligera',
-    'moderate rain': 'lluvia moderada',
-    'heavy intensity rain': 'lluvia intensa',
-    'very heavy rain': 'lluvia muy fuerte',
-    'extreme rain': 'lluvia extrema',
-    'light snow': 'nieve ligera',
-    'moderate snow': 'nieve moderada',
-    'heavy snow': 'nieve intensa',
-    'sleet': 'aguanieve',
-    'light shower': 'chubasco ligero',
-    'shower rain': 'chubasco',
-    'thunderstorm': 'tormenta',
-    'thunderstorm with light rain': 'tormenta con lluvia ligera',
-    'thunderstorm with rain': 'tormenta con lluvia',
-    'thunderstorm with heavy rain': 'tormenta con lluvia intensa',
-    'mist': 'neblina',
-    'fog': 'niebla',
-    'haze': 'bruma',
-    'dust': 'polvo',
-    'sand': 'arena',
-    'volcanic ash': 'ceniza volcánica',
-    'squalls': 'chubascos',
-    'tornado': 'tornado',
-  };
-  const lowerDesc = description.toLowerCase();
-  return translations[lowerDesc] || description;
 };
 
 const MetricItem = ({ metric, index }: { metric: { icon: string; value: string | number; unit: string; label: string; color: string }; index: number }) => {

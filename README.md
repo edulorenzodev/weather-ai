@@ -169,10 +169,11 @@ weather-ai/
 - [x] Evitar pantalla de carga al cambiar de ciudad
 - [x] Efecto de rotación en temperatura al cambiar de ciudad con swipe
 - [x] Límites de navegación (no ciclar en primera/última ciudad)
+- [x] Detalles al tocar en pronóstico de 5 días
 
 ### 📋 Pendiente
 
-- [ ] Detalles al tocar en pronóstico de 5 días
+
 - [ ] Modo offline con datos cacheados
 - [ ] Datos meteorológicos adicionales (presión, visibilidad, índice UV, amanecer/anochecer)
 - [ ] IA, mostrar botón View Detail 
@@ -186,4 +187,4 @@ weather-ai/
 - [ ] Impementar estética de "Glassmorphism"
 - [ ] Interfaz de Comparación de Fuentes: Permite a los usuarios visualizar y comparar datos de múltiples proveedores (AccuWeather, NOAA, ECMWF, etc.) lado a lado para que ellos decidan cuál es más fiable en su zona
 - [ ] Resolución del "Window Test": Integra datos de estaciones meteorológicas personales y sensores IoT cercanos (crowdsourcing) para evitar que la app marque "sol" mientras el usuario ve que está lloviendo en su calle
-- [ ] 
+

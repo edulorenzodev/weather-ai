@@ -27,41 +27,7 @@ import { ForecastList } from '../src/components/ForecastList';
 import { HourlyForecast } from '../src/components/HourlyForecast';
 import { PlacesList } from '../src/components/PlacesList';
 import { AIRecommendationCard } from '../src/components/AIRecommendationCard';
-
-const getSpanishDescription = (description: string): string => {
-  const translations: Record<string, string> = {
-    'clear sky': 'cielo despejado',
-    'few clouds': 'pocas nubes',
-    'scattered clouds': 'nubes dispersas',
-    'broken clouds': 'nubes fragmentadas',
-    'overcast clouds': 'nublado',
-    'light rain': 'lluvia ligera',
-    'moderate rain': 'lluvia moderada',
-    'heavy intensity rain': 'lluvia intensa',
-    'very heavy rain': 'lluvia muy fuerte',
-    'extreme rain': 'lluvia extrema',
-    'light snow': 'nieve ligera',
-    'moderate snow': 'nieve moderada',
-    'heavy snow': 'nieve intensa',
-    'sleet': 'aguanieve',
-    'light shower': 'chubasco ligero',
-    'shower rain': 'chubasco',
-    'thunderstorm': 'tormenta',
-    'thunderstorm with light rain': 'tormenta con lluvia ligera',
-    'thunderstorm with rain': 'tormenta con lluvia',
-    'thunderstorm with heavy rain': 'tormenta con lluvia intensa',
-    'mist': 'neblina',
-    'fog': 'niebla',
-    'haze': 'bruma',
-    'dust': 'polvo',
-    'sand': 'arena',
-    'volcanic ash': 'ceniza volcánica',
-    'squalls': 'chubascos',
-    'tornado': 'tornado',
-  };
-  const lowerDesc = description.toLowerCase();
-  return translations[lowerDesc] || description;
-};
+import { getSpanishDescription } from '../src/utils/translations';
 
 const LoadingScreen = () => {
   const pulseAnim = useRef(new RNAnimated.Value(1)).current;
@@ -145,7 +111,6 @@ const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void })
 export default function Home() {
   const { weather, forecast, hourlyForecast, loading, error, refetch } = useWeather();
   const { activeCity, cities, goToNextCity, goToPreviousCity } = useCitiesStore();
-  const citiesFromStore = useCitiesStore((state) => state.cities);
   const { temperatureUnit, windSpeedUnit } = useSettingsStore();
   const { recommendation, loading: aiLoading, getRecommendation } = useAIRecommendation();
   const { beaches, mountains, loading: placesLoading, refetch: refetchPlaces } = usePlaces(
@@ -156,7 +121,6 @@ export default function Home() {
   const [shareMenuVisible, setShareMenuVisible] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSwipeTime = useRef(0);
-  const rotateAnim = useRef(new RNAnimated.Value(0)).current;
   const scrollY = useSharedValue(0);
   const rotateX = useSharedValue(0);
   const currentCityIndexRef = useRef(0);
@@ -278,10 +242,6 @@ export default function Home() {
   const isNight = weather.sys?.sunrise && weather.sys?.sunset 
     ? now < weather.sys.sunrise || now >= weather.sys.sunset 
     : false;
-
-  const handleAddCity = () => {
-    console.log('Add city pressed');
-  };
 
   const handleMenuPress = () => {
     setShareMenuVisible(true);

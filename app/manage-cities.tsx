@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -58,7 +57,7 @@ export default function ManageCitiesScreen() {
   }, [handleDeleteCity]);
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <LinearGradient colors={['#1e3a5f', '#0d1b2a']} style={styles.gradient}>
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.header}>
@@ -121,7 +120,7 @@ export default function ManageCitiesScreen() {
           )}
         </SafeAreaView>
       </LinearGradient>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
