@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const IoniconsIcon = require('@expo/vector-icons').Ionicons;
+import { Ionicons } from '@expo/vector-icons';
 
 import { SearchBar } from '../src/components/SearchBar';
 import { SearchResultItem } from '../src/components/SearchResultItem';
@@ -61,7 +61,7 @@ export default function ManageCitiesScreen() {
       <LinearGradient colors={['#1e3a5f', '#0d1b2a']} style={styles.gradient}>
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.header}>
-            <IoniconsIcon 
+            <Ionicons 
               name="arrow-back" 
               size={24} 
               color="white" 
@@ -102,7 +102,7 @@ export default function ManageCitiesScreen() {
               
               {cities.length === 0 ? (
                 <View style={styles.emptyState}>
-                  <IoniconsIcon name="location-outline" size={48} color="rgba(255, 255, 255, 0.3)" />
+                  <Ionicons name="location-outline" size={48} color="rgba(255, 255, 255, 0.3)" />
                   <Text style={styles.emptyText}>
                     Busca una ciudad para comenzar
                   </Text>

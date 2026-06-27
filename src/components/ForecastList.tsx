@@ -6,7 +6,7 @@ import { useSettingsStore, convertTemperature } from '../store/settingsStore';
 import { getWeatherIconFromTimestamp } from '../utils/weatherIcons';
 import { getFullDayName, getShortDay } from '../utils/dateUtils';
 
-const Ionicons = require('@expo/vector-icons').Ionicons;
+import { Ionicons } from '@expo/vector-icons';
 
 const ForecastRow = ({ item, index, isLast }: { 
   item: ForecastItem; 

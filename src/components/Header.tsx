@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-const Ionicons = require('@expo/vector-icons').Ionicons;
+import { Ionicons } from '@expo/vector-icons';
 
 interface HeaderProps {
   cityName: string;

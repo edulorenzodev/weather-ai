@@ -4,7 +4,7 @@ import { ForecastItem } from '../types';
 import { useSettingsStore, convertTemperature, convertWindSpeed } from '../store/settingsStore';
 import { getWeatherIconFromTimestamp } from '../utils/weatherIcons';
 
-const Ionicons = require('@expo/vector-icons').Ionicons;
+import { Ionicons } from '@expo/vector-icons';
 
 const getWindSpeed = (speed: number, windSpeedUnit: string): string => {
   const converted = Math.round(convertWindSpeed(speed * 3.6, windSpeedUnit as any));

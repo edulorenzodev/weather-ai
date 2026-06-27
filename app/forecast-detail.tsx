@@ -1,38 +1,32 @@
-import { useRef, useMemo } from 'react';
-import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
+import { useMemo } from 'react';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ForecastItem } from '../src/types';
 import { useSettingsStore, convertTemperature } from '../src/store/settingsStore';
 import { getWeatherIconFromTimestamp } from '../src/utils/weatherIcons';
 import { getFullDayName, getDateString } from '../src/utils/dateUtils';
-
-const Ionicons = require('@expo/vector-icons').Ionicons;
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, Extrapolation, useAnimatedScrollHandler, type SharedValue } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
 
 const ForecastSlide = ({ item, index, scrollX }: {
   item: ForecastItem;
   index: number;
-  scrollX: Animated.Value;
+  scrollX: SharedValue<number>;
 }) => {
   const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-  
-  const scale = scrollX.interpolate({
-    inputRange,
-    outputRange: [0.85, 1, 0.85],
-    extrapolate: 'clamp',
-  });
 
-  const opacity = scrollX.interpolate({
-    inputRange,
-    outputRange: [0.5, 1, 0.5],
-    extrapolate: 'clamp',
-  });
+  const animatedStyle = useAnimatedStyle(() => {
+    const scale = interpolate(scrollX.value, inputRange, [0.85, 1, 0.85], Extrapolation.CLAMP);
+    const opacity = interpolate(scrollX.value, inputRange, [0.5, 1, 0.5], Extrapolation.CLAMP);
+    return { transform: [{ scale }], opacity };
+  }, [scrollX]);
 
   const temperatureUnit = useSettingsStore((state) => state.temperatureUnit);
 
   return (
-    <Animated.View style={[styles.slide, { transform: [{ scale }], opacity }]}>
+    <Animated.View style={[styles.slide, animatedStyle]}>
       <View style={styles.dayHeader}>
         <Text style={styles.dayName}>
           {index === 0 ? 'Hoy' : getFullDayName(item.dt)}
@@ -68,10 +62,28 @@ const ForecastSlide = ({ item, index, scrollX }: {
   );
 };
 
+const AnimatedDot = ({ index, scrollX }: { index: number; scrollX: SharedValue<number> }) => {
+  const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const dotScale = interpolate(scrollX.value, inputRange, [0.6, 1.2, 0.6], Extrapolation.CLAMP);
+    const dotOpacity = interpolate(scrollX.value, inputRange, [0.4, 1, 0.4], Extrapolation.CLAMP);
+    return { transform: [{ scale: dotScale }], opacity: dotOpacity };
+  }, [scrollX]);
+
+  return <Animated.View style={[styles.dot, animatedStyle]} />;
+};
+
 export default function ForecastDetail() {
   const { forecast } = useLocalSearchParams<{ forecast: string }>();
-  const scrollX = useRef(new Animated.Value(0)).current;
-  
+  const scrollX = useSharedValue(0);
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollX.value = event.contentOffset.x;
+    },
+  });
+
   const parsedForecast = useMemo(() => {
     if (!forecast) return [];
     try {
@@ -86,10 +98,10 @@ export default function ForecastDetail() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Ionicons 
-          name="chevron-back" 
-          size={24} 
-          color="white" 
+        <Ionicons
+          name="chevron-back"
+          size={24}
+          color="white"
           onPress={() => router.back()}
         />
         <Text style={styles.title}>Previsión para 5 días</Text>
@@ -101,10 +113,7 @@ export default function ForecastDetail() {
         pagingEnabled
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true }
-        )}
+        onScroll={scrollHandler}
         scrollEventThrottle={16}
       >
         {dailyForecast.map((item, index) => (
@@ -125,31 +134,6 @@ export default function ForecastDetail() {
     </View>
   );
 }
-
-const AnimatedDot = ({ index, scrollX }: { index: number; scrollX: Animated.Value }) => {
-  const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-  
-  const dotScale = scrollX.interpolate({
-    inputRange,
-    outputRange: [0.6, 1.2, 0.6],
-    extrapolate: 'clamp',
-  });
-
-  const dotOpacity = scrollX.interpolate({
-    inputRange,
-    outputRange: [0.4, 1, 0.4],
-    extrapolate: 'clamp',
-  });
-
-  return (
-    <Animated.View
-      style={[
-        styles.dot,
-        { transform: [{ scale: dotScale }], opacity: dotOpacity }
-      ]}
-    />
-  );
-};
 
 const styles = StyleSheet.create({
   container: {

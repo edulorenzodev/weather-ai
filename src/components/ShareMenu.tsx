@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { View, Text, StyleSheet, Pressable, Modal, Share } from 'react-native';
 import { useRouter } from 'expo-router';
 
-const IoniconsIcon = require('@expo/vector-icons').Ionicons;
+import { Ionicons } from '@expo/vector-icons';
 
 interface ShareMenuProps {
   visible: boolean;
@@ -41,7 +41,7 @@ const ShareMenuComponent = ({ visible, onClose, weatherText }: ShareMenuProps) =
           <View style={styles.header}>
             <Text style={styles.title}>Menú</Text>
             <Pressable onPress={onClose} hitSlop={8}>
-              <IoniconsIcon name="close" size={20} color="rgba(255, 255, 255, 0.6)" />
+              <Ionicons name="close" size={20} color="rgba(255, 255, 255, 0.6)" />
             </Pressable>
           </View>
           
@@ -49,7 +49,7 @@ const ShareMenuComponent = ({ visible, onClose, weatherText }: ShareMenuProps) =
             style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
             onPress={handleShare}
           >
-            <IoniconsIcon name="share-outline" size={22} color="white" />
+            <Ionicons name="share-outline" size={22} color="white" />
             <Text style={styles.optionText}>Compartir clima actual</Text>
           </Pressable>
           
@@ -57,7 +57,7 @@ const ShareMenuComponent = ({ visible, onClose, weatherText }: ShareMenuProps) =
             style={({ pressed }) => [styles.option, pressed && styles.optionPressed]}
             onPress={handleSettings}
           >
-            <IoniconsIcon name="settings-outline" size={22} color="white" />
+            <Ionicons name="settings-outline" size={22} color="white" />
             <Text style={styles.optionText}>Ajustes</Text>
           </Pressable>
         </Pressable>

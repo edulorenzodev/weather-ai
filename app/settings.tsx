@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore, TemperatureUnit, WindSpeedUnit } from '../src/store/settingsStore';
 
-const IoniconsIcon = require('@expo/vector-icons').Ionicons;
+import { Ionicons } from '@expo/vector-icons';
 
 export const options = { headerShown: false };
 
@@ -17,7 +17,7 @@ export default function SettingsScreen() {
       <LinearGradient colors={['#1e3a5f', '#0d1b2a']} style={styles.gradient}>
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.header}>
-            <IoniconsIcon 
+            <Ionicons 
               name="arrow-back" 
               size={24} 
               color="white" 

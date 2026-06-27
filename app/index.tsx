@@ -4,15 +4,10 @@ import {
   Text,
   ScrollView,
   RefreshControl,
-  ActivityIndicator,
   StyleSheet,
-  Platform,
-  Pressable,
-  Animated as RNAnimated,
   PanResponder,
 } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate, Extrapolation, withSpring } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWeather } from '../src/hooks/useWeather';
 import { usePlaces } from '../src/hooks/usePlaces';
@@ -28,85 +23,8 @@ import { HourlyForecast } from '../src/components/HourlyForecast';
 import { PlacesList } from '../src/components/PlacesList';
 import { AIRecommendationCard } from '../src/components/AIRecommendationCard';
 import { getSpanishDescription } from '../src/utils/translations';
-
-const LoadingScreen = () => {
-  const pulseAnim = useRef(new RNAnimated.Value(1)).current;
-
-  useEffect(() => {
-    RNAnimated.loop(
-      RNAnimated.sequence([
-        RNAnimated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        RNAnimated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
-
-  return (
-    <LinearGradient colors={['#1e3a5f', '#0d1b2a']} style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.centered}>
-          <RNAnimated.View style={[styles.loadingIcon, { transform: [{ scale: pulseAnim }] }]}>
-            <Text style={styles.loadingEmoji}>🌤️</Text>
-          </RNAnimated.View>
-          <Text style={styles.loadingTitle}>WeatherAI</Text>
-          <Text style={styles.loadingSubtitle}>Cargando datos del clima...</Text>
-          <ActivityIndicator size="large" color="#60a5fa" style={{ marginTop: 32 }} />
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
-  );
-};
-
-const ErrorScreen = ({ error, onRetry }: { error: string; onRetry: () => void }) => {
-  const buttonScale = useRef(new RNAnimated.Value(1)).current;
-
-  const handlePressIn = () => {
-    RNAnimated.spring(buttonScale, {
-      toValue: 0.95,
-      damping: 15,
-      stiffness: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    RNAnimated.spring(buttonScale, {
-      toValue: 1,
-      damping: 15,
-      stiffness: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  return (
-    <LinearGradient colors={['#1e3a5f', '#0d1b2a']} style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.centered}>
-          <View style={styles.errorIcon}>
-            <Text style={styles.errorEmoji}>⚠️</Text>
-          </View>
-          <Text style={styles.errorTitle}>No se pudo cargar</Text>
-          <Text style={styles.errorMessage}>
-            {error || 'Verifica tu conexión e intenta de nuevo'}
-          </Text>
-          <RNAnimated.View style={{ transform: [{ scale: buttonScale }] }}>
-            <Pressable style={styles.retryButton} onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onRetry}>
-              <Text style={styles.retryText}>Intentar de nuevo</Text>
-            </Pressable>
-          </RNAnimated.View>
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
-  );
-};
+import { LoadingScreen } from '../src/components/LoadingScreen';
+import { ErrorScreen } from '../src/components/ErrorScreen';
 
 export default function Home() {
   const { weather, forecast, hourlyForecast, loading, error, refetch } = useWeather();
@@ -310,81 +228,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  loadingIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-  },
-  loadingEmoji: {
-    fontSize: 36,
-  },
-  loadingTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 8,
-  },
-  loadingSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
-  errorIcon: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-  },
-  errorEmoji: {
-    fontSize: 28,
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  errorMessage: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
-    textAlign: 'center',
-    marginBottom: 32,
-  },
-  retryButton: {
-    backgroundColor: 'rgba(96, 165, 250, 0.2)',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 24,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
-  },
-  retryText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#60a5fa',
-  },
   mainTempContainer: {
     alignItems: 'center',
     paddingVertical: 20,
@@ -434,16 +277,5 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingBottom: 32,
-  },
-  loadingPlaces: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    gap: 8,
-  },
-  loadingPlacesText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.5)',
   },
 });
