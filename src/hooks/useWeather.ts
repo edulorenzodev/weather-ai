@@ -15,7 +15,7 @@ export const useWeather = () => {
 
   const { activeCity } = useCitiesStore();
   
-  const cancelTokenSourceRef = useRef(axios.CancelToken.source());
+  const abortControllerRef = useRef<AbortController | null>(null);
   const isMountedRef = useRef(true);
 
   useEffect(() => {
@@ -26,8 +26,10 @@ export const useWeather = () => {
   }, []);
 
   const fetchWeather = useCallback(async (cityCoords?: { lat: number; lon: number }) => {
-    cancelTokenSourceRef.current.cancel('Cancelling previous request');
-    cancelTokenSourceRef.current = axios.CancelToken.source();
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
 
     try {
       if (initialLoadRef.current) {
@@ -59,17 +61,18 @@ export const useWeather = () => {
         longitude = location.coords.longitude;
       }
 
+      const signal = abortControllerRef.current?.signal;
       const [weatherData, forecastData] = await Promise.all([
-        getCurrentWeather(latitude, longitude, cancelTokenSourceRef.current.token),
-        getForecast(latitude, longitude, cancelTokenSourceRef.current.token),
+        getCurrentWeather(latitude, longitude, signal),
+        getForecast(latitude, longitude, signal),
       ]);
 
       if (!isMountedRef.current) return;
 
       setWeather(weatherData);
       
-      const dailyGroups: { [key: string]: typeof forecastData.list } = {};
-      forecastData.list.forEach((item: any) => {
+      const dailyGroups: { [key: string]: ForecastItem[] } = {};
+      forecastData.list.forEach((item: ForecastItem) => {
         const date = new Date(item.dt * 1000).toDateString();
         if (!dailyGroups[date]) {
           dailyGroups[date] = [];
@@ -77,9 +80,8 @@ export const useWeather = () => {
         dailyGroups[date].push(item);
       });
 
-      const dailyForecast = Object.values(dailyGroups).slice(0, 5).map((dayItems: any[]) => {
-        const temps = dayItems.map(i => i.main.temp);
-        const dayItem = dayItems[Math.floor(dayItems.length / 2)];
+      const dailyForecast = Object.values(dailyGroups).slice(0, 5).map((dayItems: ForecastItem[]) => {
+        const dayItem = dayItems[Math.floor(dayItems.length / 2)]!;
         return {
           ...dayItem,
           main: {
@@ -92,13 +94,15 @@ export const useWeather = () => {
 
       setForecast(dailyForecast);
       setHourlyForecast(forecastData.list.slice(0, 8));
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (axios.isCancel(err)) {
         return;
       }
+      if ((err as { code?: string })?.code === 'ERR_CANCELED') return;
       console.error('Weather error:', err);
       if (isMountedRef.current) {
-        setError(err.response?.data?.message || 'Error al obtener datos del clima');
+        const axiosErr = err as { response?: { data?: { message?: string } } };
+        setError(axiosErr.response?.data?.message || 'Error al obtener datos del clima');
       }
     } finally {
       if (isMountedRef.current) {
@@ -118,7 +122,9 @@ export const useWeather = () => {
     }
     
     return () => {
-      cancelTokenSourceRef.current.cancel('Component unmounted');
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     };
   }, [activeCity, fetchWeather]);
 

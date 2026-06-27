@@ -8,7 +8,7 @@ export const useAIRecommendation = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const cancelTokenSourceRef = useRef(axios.CancelToken.source());
+  const abortControllerRef = useRef<AbortController | null>(null);
   const isMountedRef = useRef(true);
 
   const getRecommendation = useCallback(async (
@@ -16,8 +16,10 @@ export const useAIRecommendation = () => {
     beaches: Place[],
     mountains: Place[]
   ) => {
-    cancelTokenSourceRef.current.cancel('Cancelling previous request');
-    cancelTokenSourceRef.current = axios.CancelToken.source();
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
     isMountedRef.current = true;
 
     try {
@@ -28,15 +30,16 @@ export const useAIRecommendation = () => {
         weather, 
         beaches, 
         mountains,
-        cancelTokenSourceRef.current.token
+        abortControllerRef.current?.signal
       );
 
       if (!isMountedRef.current) return;
       setRecommendation(result);
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (axios.isCancel(err)) {
         return;
       }
+      if ((err as { code?: string })?.code === 'ERR_CANCELED') return;
       console.error('AI recommendation error:', err);
       if (isMountedRef.current) {
         setError('Error al generar recomendación');

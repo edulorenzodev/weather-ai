@@ -1,4 +1,4 @@
-import axios, { CancelTokenSource } from 'axios';
+import axios from 'axios';
 import { AIRecommendation, WeatherData, Place } from '../types';
 
 const API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY || 'demo_key';
@@ -7,7 +7,7 @@ export const getAIRecommendation = async (
   weather: WeatherData,
   beaches: Place[],
   mountains: Place[],
-  _cancelToken?: CancelTokenSource['token']
+  _signal?: AbortSignal
 ): Promise<AIRecommendation> => {
   const temp = weather.main.temp;
   const condition = weather.weather[0].main.toLowerCase();

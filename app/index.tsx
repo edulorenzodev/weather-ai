@@ -5,9 +5,9 @@ import {
   ScrollView,
   RefreshControl,
   StyleSheet,
-  PanResponder,
 } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate, Extrapolation, withSpring } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWeather } from '../src/hooks/useWeather';
 import { usePlaces } from '../src/hooks/usePlaces';
@@ -62,48 +62,41 @@ export default function Home() {
     };
   });
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 10;
-      },
-      onPanResponderMove: (_, gestureState) => {
-        // Solo prevenimos el scroll horizontal si es un swipe intentional
-      },
-      onPanResponderRelease: (_, gestureState) => {
-        const now = Date.now();
-        if (now - lastSwipeTime.current < 300) return;
+  const panGesture = Gesture.Pan()
+    .activeOffsetX([-20, 20])
+    .failOffsetY([-15, 15])
+    .onEnd((event) => {
+      const now = Date.now();
+      if (now - lastSwipeTime.current < 300) return;
 
-        const SWIPE_THRESHOLD = 50;
-        const currentCities = useCitiesStore.getState().cities;
-        const currentIndex = currentCityIndexRef.current;
-        const isFirstCity = currentIndex <= 0;
-        const isLastCity = currentIndex >= currentCities.length - 1;
+      const SWIPE_THRESHOLD = 50;
+      const currentCities = useCitiesStore.getState().cities;
+      const currentIndex = currentCityIndexRef.current;
+      const isFirstCity = currentIndex <= 0;
+      const isLastCity = currentIndex >= currentCities.length - 1;
 
-        if (gestureState.dx > SWIPE_THRESHOLD) {
-          if (isLastCity) {
-            rotateX.value = 15;
-            rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
-          } else {
-            rotateX.value = -90;
-            rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
-            goToNextCity();
-          }
-          lastSwipeTime.current = now;
-        } else if (gestureState.dx < -SWIPE_THRESHOLD) {
-          if (isFirstCity) {
-            rotateX.value = -15;
-            rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
-          } else {
-            rotateX.value = 90;
-            rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
-            goToPreviousCity();
-          }
-          lastSwipeTime.current = now;
+      if (event.translationX > SWIPE_THRESHOLD) {
+        if (isLastCity) {
+          rotateX.value = 15;
+          rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
+        } else {
+          rotateX.value = -90;
+          rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
+          goToNextCity();
         }
-      },
-    })
-  ).current;
+        lastSwipeTime.current = now;
+      } else if (event.translationX < -SWIPE_THRESHOLD) {
+        if (isFirstCity) {
+          rotateX.value = -15;
+          rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
+        } else {
+          rotateX.value = 90;
+          rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
+          goToPreviousCity();
+        }
+        lastSwipeTime.current = now;
+      }
+    });
 
   const fetchAIRecommendation = useCallback(() => {
     if (weather && beaches && mountains) {
@@ -171,11 +164,12 @@ export default function Home() {
     : '';
 
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
-      <WeatherBackground condition={weatherCondition} isNight={isNight} />
-      <SafeAreaView style={styles.safeArea}>
-        <Header cityName={activeCity?.name || weather?.name || ''} onMenuPress={handleMenuPress} />
-        <CityIndicator />
+    <GestureDetector gesture={panGesture}>
+      <View style={styles.container}>
+        <WeatherBackground condition={weatherCondition} isNight={isNight} />
+        <SafeAreaView style={styles.safeArea}>
+          <Header cityName={activeCity?.name || weather?.name || ''} onMenuPress={handleMenuPress} />
+          <CityIndicator />
 
           <ScrollView
             style={styles.scrollView}
@@ -217,7 +211,8 @@ export default function Home() {
           onClose={() => setShareMenuVisible(false)}
           weatherText={weatherShareText}
         />
-    </View>
+      </View>
+    </GestureDetector>
   );
 }
 
@@ -231,15 +226,6 @@ const styles = StyleSheet.create({
   mainTempContainer: {
     alignItems: 'center',
     paddingVertical: 20,
-  },
-  fadeOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 200,
-    zIndex: 10,
-    pointerEvents: 'none',
   },
   mainTemp: {
     fontSize: 120,

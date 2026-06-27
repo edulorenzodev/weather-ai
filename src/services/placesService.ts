@@ -17,7 +17,7 @@ const hasRelevantCategory = (place: Place, categoryIds: (number | string)[]): bo
   return targetIds.some(id => placeCategoryIds.includes(id));
 };
 
-const getCategoryId = (cat: any): string => {
+const getCategoryId = (cat: Place['categories'][number]): string => {
   return String(cat.fsq_category_id || cat.id || '');
 };
 
@@ -62,11 +62,11 @@ export const searchPlaces = async (
     console.log(`Found ${results.length} filtered results for "${searchQuery}"`);
 
     return results.slice(0, 5);
-  } catch (error: any) {
-    if (axios.isCancel(error) || error?.code === 'ERR_CANCELED') {
+  } catch (error: unknown) {
+    if (axios.isCancel(error) || (error as { code?: string })?.code === 'ERR_CANCELED') {
       return [];
     }
-    console.error('Places error:', error.message);
+    console.error('Places error:', error instanceof Error ? error.message : String(error));
     return [];
   }
 };

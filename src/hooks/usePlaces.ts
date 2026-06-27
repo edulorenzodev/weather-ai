@@ -41,7 +41,7 @@ export const usePlaces = (lat?: number, lon?: number) => {
 
       setBeaches(beachesData);
       setMountains(mountainsData);
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (axios.isCancel(err)) {
         return;
       }

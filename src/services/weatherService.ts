@@ -1,4 +1,4 @@
-import axios, { CancelTokenSource } from 'axios';
+import axios from 'axios';
 import { WeatherData, ForecastItem, City } from '../types';
 
 const API_KEY = process.env.EXPO_PUBLIC_OPENWEATHER_API_KEY || 'demo_key';
@@ -8,7 +8,7 @@ const GEO_URL = 'https://api.openweathermap.org/geo/1.0';
 export const searchCities = async (
   query: string,
   limit: number = 10,
-  cancelToken?: CancelTokenSource['token']
+  signal?: AbortSignal
 ): Promise<City[]> => {
   if (!query || query.trim().length < 2) {
     return [];
@@ -20,10 +20,10 @@ export const searchCities = async (
       limit,
       appid: API_KEY,
     },
-    cancelToken,
+    signal,
   });
   
-  return response.data.map((item: any) => ({
+  return response.data.map((item: { name?: string; state?: string; country?: string; country_code?: string; lat?: number; lon?: number }) => ({
     name: item.name || '',
     state: item.state || undefined,
     country: item.country || item.country_code || '',
@@ -35,7 +35,7 @@ export const searchCities = async (
 export const getCurrentWeather = async (
   lat: number, 
   lon: number, 
-  cancelToken?: CancelTokenSource['token']
+  signal?: AbortSignal
 ): Promise<WeatherData> => {
   const response = await axios.get(`${BASE_URL}/weather`, {
     params: {
@@ -44,7 +44,7 @@ export const getCurrentWeather = async (
       appid: API_KEY,
       units: 'metric',
     },
-    cancelToken,
+    signal,
   });
   return response.data;
 };
@@ -52,7 +52,7 @@ export const getCurrentWeather = async (
 export const getForecast = async (
   lat: number, 
   lon: number, 
-  cancelToken?: CancelTokenSource['token']
+  signal?: AbortSignal
 ): Promise<{ list: ForecastItem[] }> => {
   const response = await axios.get(`${BASE_URL}/forecast`, {
     params: {
@@ -61,7 +61,7 @@ export const getForecast = async (
       appid: API_KEY,
       units: 'metric',
     },
-    cancelToken,
+    signal,
   });
   return response.data;
 };

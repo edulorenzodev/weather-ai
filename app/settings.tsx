@@ -24,7 +24,7 @@ export default function SettingsScreen() {
               onPress={() => router.back()} 
             />
             <Text style={styles.title}>Ajustes</Text>
-            <View style={{ width: 24 }} />
+            <View style={styles.headerSpacer} />
           </View>
 
           <View style={styles.content}>
@@ -103,6 +103,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: 'white',
+  },
+  headerSpacer: {
+    width: 24,
   },
   content: {
     flex: 1,

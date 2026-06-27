@@ -32,7 +32,7 @@ export const LoadingScreen = () => {
           </Animated.View>
           <Text style={styles.loadingTitle}>WeatherAI</Text>
           <Text style={styles.loadingSubtitle}>Cargando datos del clima...</Text>
-          <ActivityIndicator size="large" color="#60a5fa" style={{ marginTop: 32 }} />
+          <ActivityIndicator size="large" color="#60a5fa" style={styles.spinner} />
         </View>
       </SafeAreaView>
     </LinearGradient>
@@ -73,5 +73,8 @@ const styles = StyleSheet.create({
   loadingSubtitle: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.5)',
+  },
+  spinner: {
+    marginTop: 32,
   },
 });

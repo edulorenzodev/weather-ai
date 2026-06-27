@@ -68,7 +68,7 @@ export default function ManageCitiesScreen() {
               onPress={() => router.back()} 
             />
             <Text style={styles.title}>Gestionar Ciudades</Text>
-            <View style={{ width: 24 }} />
+            <View style={styles.headerSpacer} />
           </View>
 
           <View style={styles.searchContainer}>
@@ -145,6 +145,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#ffffff',
+  },
+  headerSpacer: {
+    width: 24,
   },
   searchContainer: {
     paddingHorizontal: 20,

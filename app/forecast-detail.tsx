@@ -105,7 +105,7 @@ export default function ForecastDetail() {
           onPress={() => router.back()}
         />
         <Text style={styles.title}>Previsión para 5 días</Text>
-        <View style={{ width: 24 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       <Animated.ScrollView
@@ -219,6 +219,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginTop: 20,
+  },
+  headerSpacer: {
+    width: 24,
   },
   dot: {
     width: 8,
