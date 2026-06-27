@@ -42,6 +42,9 @@ yarn-error.*
 /ios
 /android
 
+# Windows reserved names
+nul
+
 # opencode config
 opencode.json
 skills-lock.json
