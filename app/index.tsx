@@ -5,9 +5,9 @@ import {
   ScrollView,
   RefreshControl,
   StyleSheet,
+  PanResponder,
 } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate, Extrapolation, withSpring } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useWeather } from '../src/hooks/useWeather';
 import { usePlaces } from '../src/hooks/usePlaces';
@@ -62,41 +62,44 @@ export default function Home() {
     };
   });
 
-  const panGesture = Gesture.Pan()
-    .activeOffsetX([-20, 20])
-    .failOffsetY([-15, 15])
-    .onEnd((event) => {
-      const now = Date.now();
-      if (now - lastSwipeTime.current < 300) return;
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gs) =>
+        Math.abs(gs.dx) > Math.abs(gs.dy) && Math.abs(gs.dx) > 10,
+      onPanResponderRelease: (_, gs) => {
+        const now = Date.now();
+        if (now - lastSwipeTime.current < 300) return;
 
-      const SWIPE_THRESHOLD = 50;
-      const currentCities = useCitiesStore.getState().cities;
-      const currentIndex = currentCityIndexRef.current;
-      const isFirstCity = currentIndex <= 0;
-      const isLastCity = currentIndex >= currentCities.length - 1;
+        const SWIPE_THRESHOLD = 50;
+        const currentCities = useCitiesStore.getState().cities;
+        const currentIndex = currentCityIndexRef.current;
+        const isFirstCity = currentIndex <= 0;
+        const isLastCity = currentIndex >= currentCities.length - 1;
 
-      if (event.translationX > SWIPE_THRESHOLD) {
-        if (isLastCity) {
-          rotateX.value = 15;
-          rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
-        } else {
-          rotateX.value = -90;
-          rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
-          goToNextCity();
+        if (gs.dx > SWIPE_THRESHOLD) {
+          if (isLastCity) {
+            rotateX.value = 15;
+            rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
+          } else {
+            rotateX.value = -90;
+            rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
+            goToNextCity();
+          }
+          lastSwipeTime.current = now;
+        } else if (gs.dx < -SWIPE_THRESHOLD) {
+          if (isFirstCity) {
+            rotateX.value = -15;
+            rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
+          } else {
+            rotateX.value = 90;
+            rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
+            goToPreviousCity();
+          }
+          lastSwipeTime.current = now;
         }
-        lastSwipeTime.current = now;
-      } else if (event.translationX < -SWIPE_THRESHOLD) {
-        if (isFirstCity) {
-          rotateX.value = -15;
-          rotateX.value = withSpring(0, { damping: 15, stiffness: 200 });
-        } else {
-          rotateX.value = 90;
-          rotateX.value = withSpring(0, { damping: 12, stiffness: 80 });
-          goToPreviousCity();
-        }
-        lastSwipeTime.current = now;
-      }
-    });
+      },
+    })
+  ).current;
 
   const fetchAIRecommendation = useCallback(() => {
     if (weather && beaches && mountains) {
@@ -164,55 +167,53 @@ export default function Home() {
     : '';
 
   return (
-    <GestureDetector gesture={panGesture}>
-      <View style={styles.container}>
-        <WeatherBackground condition={weatherCondition} isNight={isNight} />
-        <SafeAreaView style={styles.safeArea}>
-          <Header cityName={activeCity?.name || weather?.name || ''} onMenuPress={handleMenuPress} />
-          <CityIndicator />
+    <View style={styles.container} {...panResponder.panHandlers}>
+      <WeatherBackground condition={weatherCondition} isNight={isNight} />
+      <SafeAreaView style={styles.safeArea}>
+        <Header cityName={activeCity?.name || weather?.name || ''} onMenuPress={handleMenuPress} />
+        <CityIndicator />
 
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
-            onScroll={(event) => {
-              scrollY.value = event.nativeEvent.contentOffset.y;
-            }}
-            scrollEventThrottle={16}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={handleRefresh}
-                tintColor="#60a5fa"
-                colors={['#60a5fa']}
-                progressBackgroundColor="rgba(255,255,255,0.1)"
-              />
-            }
-            showsVerticalScrollIndicator={false}
-          >
-            <Animated.View style={[styles.mainTempContainer, fadeOverlayStyle, rotateStyle]}>
-              <View style={styles.tempRow}>
-                <Text style={styles.mainTemp}>{Math.round(convertTemperature(weather.main.temp, temperatureUnit))}</Text>
-                <Text style={styles.tempUnit}>{tempSymbol}</Text>
-              </View>
-              <Text style={styles.conditionMaxMin}>
-                {getSpanishDescription(weather.weather[0]?.description || '')} {Math.round(convertTemperature(weather.main.temp_max, temperatureUnit))}° {Math.round(convertTemperature(weather.main.temp_min, temperatureUnit))}°
-              </Text>
-              <Text style={styles.feelsLike}>Sensación térmica {Math.round(convertTemperature(weather.main.feels_like, temperatureUnit))}°</Text>
-            </Animated.View>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          onScroll={(event) => {
+            scrollY.value = event.nativeEvent.contentOffset.y;
+          }}
+          scrollEventThrottle={16}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor="#60a5fa"
+              colors={['#60a5fa']}
+              progressBackgroundColor="rgba(255,255,255,0.1)"
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          <Animated.View style={[styles.mainTempContainer, fadeOverlayStyle, rotateStyle]}>
+            <View style={styles.tempRow}>
+              <Text style={styles.mainTemp}>{Math.round(convertTemperature(weather.main.temp, temperatureUnit))}</Text>
+              <Text style={styles.tempUnit}>{tempSymbol}</Text>
+            </View>
+            <Text style={styles.conditionMaxMin}>
+              {getSpanishDescription(weather.weather[0]?.description || '')} {Math.round(convertTemperature(weather.main.temp_max, temperatureUnit))}° {Math.round(convertTemperature(weather.main.temp_min, temperatureUnit))}°
+            </Text>
+            <Text style={styles.feelsLike}>Sensación térmica {Math.round(convertTemperature(weather.main.feels_like, temperatureUnit))}°</Text>
+          </Animated.View>
 
-            <HourlyForecast forecast={hourlyForecast} />
-            <AIRecommendationCard recommendation={recommendation} loading={aiLoading} />
-            <ForecastList forecast={forecast} />
-            <PlacesList beaches={beaches} mountains={mountains} />
-          </ScrollView>
-        </SafeAreaView>
-        <ShareMenu
-          visible={shareMenuVisible}
-          onClose={() => setShareMenuVisible(false)}
-          weatherText={weatherShareText}
-        />
-      </View>
-    </GestureDetector>
+          <HourlyForecast forecast={hourlyForecast} />
+          <AIRecommendationCard recommendation={recommendation} loading={aiLoading} />
+          <ForecastList forecast={forecast} />
+          <PlacesList beaches={beaches} mountains={mountains} />
+        </ScrollView>
+      </SafeAreaView>
+      <ShareMenu
+        visible={shareMenuVisible}
+        onClose={() => setShareMenuVisible(false)}
+        weatherText={weatherShareText}
+      />
+    </View>
   );
 }
 
