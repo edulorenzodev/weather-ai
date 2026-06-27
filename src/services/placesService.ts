@@ -63,6 +63,9 @@ export const searchPlaces = async (
 
     return results.slice(0, 5);
   } catch (error: any) {
+    if (axios.isCancel(error) || error?.code === 'ERR_CANCELED') {
+      return [];
+    }
     console.error('Places error:', error.message);
     return [];
   }

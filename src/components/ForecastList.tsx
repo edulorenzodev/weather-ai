@@ -13,6 +13,7 @@ const ForecastRow = ({ item, index, isLast }: {
   index: number; 
   isLast: boolean;
 }) => {
+  const { temperatureUnit } = useSettingsStore();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateX = useRef(new Animated.Value(-20)).current;
 
@@ -52,10 +53,10 @@ const ForecastRow = ({ item, index, isLast }: {
 
       <View style={styles.tempContainer}>
         <Text style={styles.tempHigh}>
-          {Math.round(convertTemperature(item.main.temp_max, useSettingsStore.getState().temperatureUnit))}°
+          {Math.round(convertTemperature(item.main.temp_max, temperatureUnit))}°
         </Text>
         <Text style={styles.tempLow}>
-          {Math.round(convertTemperature(item.main.temp_min, useSettingsStore.getState().temperatureUnit))}°
+          {Math.round(convertTemperature(item.main.temp_min, temperatureUnit))}°
         </Text>
       </View>
     </Animated.View>

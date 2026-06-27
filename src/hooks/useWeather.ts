@@ -10,7 +10,7 @@ export const useWeather = () => {
   const [forecast, setForecast] = useState<ForecastItem[]>([]);
   const [hourlyForecast, setHourlyForecast] = useState<ForecastItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [initialLoad, setInitialLoad] = useState(true);
+  const initialLoadRef = useRef(true);
   const [error, setError] = useState<string | null>(null);
 
   const { activeCity } = useCitiesStore();
@@ -30,7 +30,7 @@ export const useWeather = () => {
     cancelTokenSourceRef.current = axios.CancelToken.source();
 
     try {
-      if (initialLoad) {
+      if (initialLoadRef.current) {
         setLoading(true);
       }
       setError(null);
@@ -102,9 +102,9 @@ export const useWeather = () => {
       }
     } finally {
       if (isMountedRef.current) {
-        if (initialLoad) {
+        if (initialLoadRef.current) {
           setLoading(false);
-          setInitialLoad(false);
+          initialLoadRef.current = false;
         }
       }
     }
