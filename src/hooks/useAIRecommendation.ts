@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { AIRecommendation, WeatherData, Place } from '../types';
-import { getAIRecommendation } from '../services/aiService';
+import { getAIRecommendationWithGPT } from '../services/aiService';
 
 export const useAIRecommendation = () => {
   const [recommendation, setRecommendation] = useState<AIRecommendation | null>(null);
@@ -26,9 +26,9 @@ export const useAIRecommendation = () => {
       setLoading(true);
       setError(null);
 
-      const result = await getAIRecommendation(
-        weather, 
-        beaches, 
+      const result = await getAIRecommendationWithGPT(
+        weather,
+        beaches,
         mountains,
         abortControllerRef.current?.signal
       );

@@ -77,7 +77,8 @@ export const getAIRecommendation = async (
 export const getAIRecommendationWithGPT = async (
   weather: WeatherData,
   beaches: Place[],
-  mountains: Place[]
+  mountains: Place[],
+  signal?: AbortSignal
 ): Promise<AIRecommendation> => {
   const getPlaceDistance = (place: Place) => place.distance ? `${Math.round(place.distance)}m` : 'cercana';
   
@@ -101,29 +102,30 @@ export const getAIRecommendationWithGPT = async (
   }`;
 
   try {
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a helpful assistant that recommends outdoor activities based on weather and nearby places. Always respond in Spanish.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.7,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a helpful assistant that recommends outdoor activities based on weather and nearby places. Always respond in Spanish.',
+            },
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+          temperature: 0.7,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          signal,
+        }
+      );
 
     const content = response.data.choices[0].message.content.trim();
     const jsonMatch = content.match(/\{[\s\S]*\}/);
